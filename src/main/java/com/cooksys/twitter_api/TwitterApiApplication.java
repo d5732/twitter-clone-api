@@ -1,13 +1,13 @@
-package com.cooksys.team2assessment.twitter_api;
+package com.cooksys.twitter_api;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class Team2assessmentApplication {
+public class TwitterApiApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(Team2assessmentApplication.class, args);
+		SpringApplication.run(TwitterApiApplication.class, args);
 	}
 
 }
