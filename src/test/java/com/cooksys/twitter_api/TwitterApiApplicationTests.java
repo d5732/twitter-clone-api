@@ -1,10 +1,10 @@
-package com.cooksys.team2assessment;
+package com.cooksys.twitter_api;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class Team2assessmentApplicationTests {
+class TwitterApiApplicationTests {
 
 	@Test
 	void contextLoads() {
