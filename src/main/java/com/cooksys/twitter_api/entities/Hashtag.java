@@ -18,6 +18,7 @@ public class Hashtag {
     private String label;
     private Timestamp firstUsed;
     private Timestamp lastUsed;
+    
     @NotNull
     @ManyToOne
     @JoinColumn(name = "tweet_id")
