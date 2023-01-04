@@ -8,7 +8,7 @@ import com.cooksys.twitter_api.entities.*;
 
 
 
-//@Mapper(componentModel = "spring", uses = { SimpleMapper.class, RepostMapper.class, ReplyMapper.class })
+@Mapper(componentModel = "spring", uses = { UserMapper.class })
 public interface TweetMapper {
 
 	
