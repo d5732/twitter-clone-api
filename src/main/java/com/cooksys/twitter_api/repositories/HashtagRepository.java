@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 import com.cooksys.twitter_api.entities.Hashtag;
 
 @Repository
-public interface HashtagRepository extends JpaRepository<Hashtag, String> {
+public interface HashtagRepository extends JpaRepository<Hashtag, Long> {
 
 }

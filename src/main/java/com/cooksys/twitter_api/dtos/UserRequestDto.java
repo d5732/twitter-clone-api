@@ -2,7 +2,7 @@ package com.cooksys.twitter_api.dtos;
 
 public class UserRequestDto {
 
-    CredentialsDto credentialsDto;
+    CredentialsRequestDto credentialsRequestDto;
+    ProfileRequestDto profileRequestDto;
 
-//    ProfileDto credentialsDto;
 }

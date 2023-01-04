@@ -1,7 +1,6 @@
 package com.cooksys.twitter_api.entities;
 
-import java.security.Timestamp;
-
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -12,26 +11,19 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class User {
+
 	@Id
 	@GeneratedValue
 	private Long id;
-	
-	private String username;
-	
-	private String password;
-	
-	private Timestamp joined;
-	
+
+	@Embedded
+	private Credentials credentials;
+
+	@Embedded
+	private Profile profile;
+
 	private boolean deleted;
-	
-	private String firstName;
-	
-	private String lastName;
-	
-	private String email;
-	
-	private String phone;
-	
+
 	//@OneToMany(mappedBy = "follower_id")
 	//private Followers followers;
 	
@@ -43,8 +35,5 @@ public class User {
 	
 	//@OneToMany(mappedBy = "tweet")
 	//private Tweet tweet;
-	
-	
-	
 	
 }
