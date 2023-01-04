@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+
 import java.sql.Timestamp;
 
 @Entity
@@ -18,6 +19,7 @@ public class Hashtag {
     private Timestamp firstUsed;
     private Timestamp lastUsed;
     
+
     @ManyToOne
     @JoinColumn(name = "tweet_id")
     private Tweet tweet;
