@@ -1,12 +1,14 @@
 package com.cooksys.twitter_api.entities;
 
-import jakarta.persistence.Embeddable;
+import javax.persistence.Embeddable;
 
-import java.security.Timestamp;
+import lombok.NoArgsConstructor;
+import lombok.Data;
 
 @Embeddable
+@NoArgsConstructor
+@Data
 public class Profile {
-    private Timestamp joined;
 
     private String firstName;
 
