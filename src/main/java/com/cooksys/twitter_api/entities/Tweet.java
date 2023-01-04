@@ -1,14 +1,12 @@
 package com.cooksys.twitter_api.entities;
 
 import java.security.Timestamp;
-import java.sql.Date;
 import java.util.Optional;
-
-import jakarta.persistence.JoinColumn;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import lombok.Data;
