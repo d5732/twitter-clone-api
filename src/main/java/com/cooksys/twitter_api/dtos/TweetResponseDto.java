@@ -10,15 +10,15 @@ public class TweetResponseDto {
 	
 	private Long id;
 	
-	private User author;
+	private UserResponseDto author;
 	
 	private Timestamp posted;
 
     private Optional<String> content;
     
-    private Optional<Tweet> inReplyTo;
+    private Optional<TweetResponseDto> inReplyTo;
 
-    private Optional<Tweet> repostOf;
+    private Optional<TweetResponseDto> repostOf;
 
 
 

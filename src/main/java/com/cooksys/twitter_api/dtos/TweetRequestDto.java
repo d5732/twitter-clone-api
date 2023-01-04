@@ -6,7 +6,7 @@ import java.util.Optional;
 public class TweetRequestDto {
 
 	
-	private String author;
+	private String content;
 	
 
 	List<CredentialsDto> credentials;
