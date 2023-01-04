@@ -1,5 +1,6 @@
 package com.cooksys.twitter_api.entities;
 
+import java.util.List;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -30,22 +31,21 @@ public class User {
 	@OneToMany(mappedBy = "tweet")
 	private Tweet tweet;
 	
-//	@ManyToOne
-//	@JoinColumn(name = "follower_id")
-//	private Followers followers;
+	@ManyToOne
+	@JoinColumn(name = "follower_id")
+	private List<User> followers;
 	
-//	@ManyToOne
-//	@JoinColumn(name = "following_id")
-//	private Following following;
+	@ManyToOne
+	@JoinColumn(name = "following_id")
+	private List<User>  following;
 	
-//	@ManyToOne
-//	@JoinColumn(name = "user_likes")
-//	private UserLikes userLikes;
-//	
-//	@ManyToOne
-//	@JoinColumn(name = "user_mentions")
-//	private UserMentions userMentions;
-//	
+	@ManyToOne
+	@JoinColumn(name = "user_likes")
+	private List<Tweet> userLikes;
+
+	@ManyToOne
+	@JoinColumn(name = "user_mentions")
+	private List<Tweet> userMentions;
 
 	
 }
