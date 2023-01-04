@@ -100,7 +100,7 @@ public class TweetController {
     public void getContext() {
     }
 
-    
+
     /**
      * GET tweets/{id}/replies endpoint
      * #50

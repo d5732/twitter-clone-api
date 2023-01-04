@@ -9,39 +9,35 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor
 @Data
-@Table(name="user_table")
+@Table(name = "user_table")
 public class User {
 
-	@Id
-	@GeneratedValue
-	private Long id;
+    @Id
+    @GeneratedValue
+    private Long id;
 
-	@Embedded
-	private Credentials credentials;
+    @Embedded
+    private Credentials credentials;
 
-	@Embedded
-	private Profile profile;
+    @Embedded
+    private Profile profile;
 
-	private boolean deleted;
-	
-	@OneToMany(mappedBy = "tweet")
-	private Tweet tweet;
-	
-	@ManyToOne
-	@JoinColumn(name = "follower_id")
-	private List<User> followers;
-	
-	@ManyToOne
-	@JoinColumn(name = "following_id")
-	private List<User>  following;
-	
-	@ManyToOne
-	@JoinColumn(name = "user_likes")
-	private List<Tweet> userLikes;
+    private boolean deleted;
 
-	@ManyToOne
-	@JoinColumn(name = "user_mentions")
-	private List<Tweet> userMentions;
+    @OneToMany
+    private List<Tweet> tweets;
 
-	
+    @ManyToMany(mappedBy = "user") // child
+    private List<User> followers;
+
+    @ManyToMany
+    private List<User> following;
+
+    @ManyToMany(mappedBy = "tweet")
+    private List<Tweet> likes;
+
+    @ManyToMany
+    private List<Tweet> mentions;
+
+
 }

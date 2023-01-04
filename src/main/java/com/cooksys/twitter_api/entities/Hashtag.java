@@ -19,7 +19,7 @@ public class Hashtag {
     private Timestamp firstUsed;
     private Timestamp lastUsed;
     
-    @ManytoMany(mappedBy="hashtagList")
+    @ManyToMany(mappedBy="hashtagList")
     private List<Tweet> tweetList;
 
 }

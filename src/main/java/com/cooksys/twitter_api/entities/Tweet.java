@@ -33,6 +33,13 @@ public class Tweet {
     @OneToMany(mappedBy = "tweet")
     private Optional<Tweet> repostOf;
 
+    @ManyToMany
     private List<Hashtag> hashtagList;
+
+    @ManyToMany(mappedBy="user_table")
+    private List<User> likes;
+
+    @ManyToMany(mappedBy="user_table")
+    private List<User> mentions;
 
 }
