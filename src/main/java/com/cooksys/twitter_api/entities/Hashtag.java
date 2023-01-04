@@ -10,7 +10,8 @@ import java.sql.Timestamp;
 
 public class Hashtag {
 
-    @Id@GeneratedValue
+    @Id
+    @GeneratedValue
     private Long id;
     private String label;
     private Timestamp firstUsed;
