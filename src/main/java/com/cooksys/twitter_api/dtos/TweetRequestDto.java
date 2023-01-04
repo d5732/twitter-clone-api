@@ -9,6 +9,6 @@ public class TweetRequestDto {
 	private String author;
 	
 
-	//List<CredentialsRequestDto> credentials;
+	List<CredentialsDto> credentials;
 	
 }
