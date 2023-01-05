@@ -1,5 +1,6 @@
 package com.cooksys.twitter_api.mappers;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -12,26 +13,26 @@ import com.cooksys.twitter_api.dtos.UserResponseDto;
 import com.cooksys.twitter_api.entities.*;
 
 
-
-@Mapper(componentModel = "spring", uses = { UserMapper.class })
+@Mapper(componentModel = "spring", uses = {UserMapper.class})
 public interface TweetMapper {
 
-	
-	  TweetResponseDto entityToDto(Tweet entity);
-	  
-	  Tweet Dto_To_Entity(TweetResponseDto entity);
 
+//    TweetResponseDto entityToDto(Tweet entity);
+//
+//    Tweet Dto_To_Entity(TweetResponseDto entity);
+//
+//
+//    Tweet request_DTO_To_Entity(TweetResponseDto qDTO);
+//
+//    ///// added /////
+//
+//
+//    ContextDto entityToContextDto(Tweet tweet);
+//
+//    List<TweetResponseDto> entitiesToDtos(ArrayList<Tweet> feed);
+//
+//    void entitiesToContextDto();
 
-	  List<TweetResponseDto> entitiesToDtos(List<Tweet> entities);
-	  
-	  Tweet request_DTO_To_Entity(TweetResponseDto qDTO);
-	  
-	  ///// added /////
-	  
-	  List<UserResponseDto> entitiesToUserDtos(List<User> users, HttpStatus ok);
-	  
-	  ContextDto entitiesToContextDto(List<Tweet> tweet);
-	  
 }
 
 

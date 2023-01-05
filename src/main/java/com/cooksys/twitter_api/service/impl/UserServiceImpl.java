@@ -1,9 +1,6 @@
 package com.cooksys.twitter_api.service.impl;
 
-import com.cooksys.twitter_api.dtos.CredentialsDto;
-import com.cooksys.twitter_api.dtos.ProfileDto;
-import com.cooksys.twitter_api.dtos.TweetResponseDto;
-import com.cooksys.twitter_api.dtos.UserResponseDto;
+import com.cooksys.twitter_api.dtos.*;
 import com.cooksys.twitter_api.entities.Credentials;
 import com.cooksys.twitter_api.entities.Profile;
 import com.cooksys.twitter_api.entities.Tweet;
@@ -30,7 +27,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
-    private final TweetMapper tweetMapper;
+    //    private final TweetMapper tweetMapper; //todo: fix;
     private final ProfileMapper profileMapper;
     private final CredentialsMapper credentialsMapper;
 
@@ -192,7 +189,9 @@ public class UserServiceImpl implements UserService {
         }
         //TODO: Check sort order
         feed.sort(new SortByPostedReverse());
-        return tweetMapper.entitiesToDtos(feed);
+//        return tweetMapper.entitiesToDtos(feed);
+        //todo: fix;
+        return null;
     }
 
     /**
@@ -219,8 +218,11 @@ public class UserServiceImpl implements UserService {
         }
         //TODO: Check sort order
         optionalUser.get().getMentionsTweetList().sort(new SortByPostedReverse());
-        return tweetMapper.entitiesToDtos(optionalUser.get().getTweets());
+//        return tweetMapper.entitiesToDtos(optionalUser.get().getTweets());
+//    todo: fix or replace entitiesToDtos with for loop
+        return null;
     }
+
 
     /**
      * GET users/@{username}/mentions
@@ -248,7 +250,9 @@ public class UserServiceImpl implements UserService {
         }
         //TODO: Check sort order
         optionalUser.get().getMentionsTweetList().sort(new SortByPostedReverse());
-        return tweetMapper.entitiesToDtos(optionalUser.get().getMentionsTweetList());
+        return null;
+        // TODO: fix
+//        return tweetMapper.entitiesToDtos(optionalUser.get().getMentionsTweetList());
     }
 
 
@@ -325,7 +329,9 @@ public class UserServiceImpl implements UserService {
      * #43
      */
     @Override
-    public UserResponseDto createUser(CredentialsDto credentialsDto, ProfileDto profileDto) {
+    public UserResponseDto createUser(UserRequestDto userRequestDto) {
+        CredentialsDto credentialsDto = userRequestDto.getCredentials();
+        ProfileDto profileDto = userRequestDto.getProfile();
         if (!isValid(credentialsDto) || !isValid(profileDto)) {
             throw new BadRequestException("Required field(s) missing");
         }
