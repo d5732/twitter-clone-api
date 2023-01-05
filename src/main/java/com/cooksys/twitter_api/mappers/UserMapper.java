@@ -10,7 +10,8 @@ import com.cooksys.twitter_api.entities.User;
 @Mapper(componentModel = "spring", uses = { ProfileMapper.class, CredentialsMapper.class })
 public interface UserMapper {
 
-	@Mapping(target = "username", source = "credentials.username")
+	//TODO: Fix the error produced here
+//	@Mapping(target = "username", source = "credentials.username")
 	UserResponseDto entityToDto(User user);
 
 	User DtoToEntity(UserRequestDto userRequestDto);
