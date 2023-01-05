@@ -8,41 +8,34 @@ import com.cooksys.twitter_api.dtos.TweetRequestDto;
 
 import com.cooksys.twitter_api.dtos.TweetResponseDto;
 
-
 public interface TweetService {
-	
-	
-	  List<TweetResponseDto> getTweets();		// get All Tweets
-	  
-	  ResponseEntity<TweetResponseDto> postTweets(@PathVariable TweetResponseDto tweetResponseDto);
 
-	  ResponseEntity<TweetResponseDto> getTweet(Long id);
+	List<TweetResponseDto> getTweets(); // get All Tweets
 
-	  TweetResponseDto deleteTweet(Long id);	
-	  
-	  TweetResponseDto likeTweet(Long id);
+	ResponseEntity<TweetResponseDto> postTweets(@PathVariable TweetResponseDto tweetResponseDto);
 
-	  ResponseEntity<TweetRequestDto> createTweetReply(@PathVariable TweetRequestDto tweetRequestDto);
+	ResponseEntity<TweetResponseDto> getTweet(Long id);
 
-	  ResponseEntity<TweetRequestDto> replyToTweet(Long ID, @PathVariable TweetRequestDto tweetRequestDto);
-	  
-	  	  
-	  ResponseEntity<TweetRequestDto> repostTweet(Long ID, @PathVariable TweetRequestDto tweetRequestDto);
+	TweetResponseDto deleteTweet(Long id);
 
-	  
-	  ResponseEntity<TweetResponseDto> getTags(Long id);
-	  
-	  
-	  ResponseEntity<TweetResponseDto> getLikes(Long id);
+	TweetResponseDto likeTweet(Long id);
 
-	  
-	  ResponseEntity<TweetResponseDto> getContext(Long ID, TweetResponseDto tweetResponseDto);
+	ResponseEntity<TweetRequestDto> createTweetReply(@PathVariable TweetRequestDto tweetRequestDto);
 
-	  ResponseEntity<TweetResponseDto> getReplies(Long ID, TweetResponseDto tweetResponseDto);
+	ResponseEntity<TweetRequestDto> replyToTweet(Long ID, @PathVariable TweetRequestDto tweetRequestDto);
 
-	  ResponseEntity<TweetResponseDto> getReposts(Long id);
-	  
-	  
-	  ResponseEntity<TweetResponseDto> getMentions(Long id);
+	ResponseEntity<TweetRequestDto> repostTweet(Long ID, @PathVariable TweetRequestDto tweetRequestDto);
+
+	ResponseEntity<TweetResponseDto> getTags(Long id);
+
+	ResponseEntity<TweetResponseDto> getLikes(Long id);
+
+	ResponseEntity<TweetResponseDto> getContext(Long ID, TweetResponseDto tweetResponseDto);
+
+	ResponseEntity<TweetResponseDto> getReplies(Long ID, TweetResponseDto tweetResponseDto);
+
+	ResponseEntity<TweetResponseDto> getReposts(Long id);
+
+	ResponseEntity<TweetResponseDto> getMentions(Long id);
 
 }

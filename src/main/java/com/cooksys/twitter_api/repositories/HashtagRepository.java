@@ -11,9 +11,9 @@ import com.cooksys.twitter_api.entities.Tweet;
 
 @Repository
 public interface HashtagRepository extends JpaRepository<Hashtag, Long> {
-	
+
 	Optional<Hashtag> findByIdAndDeletedFalse(Long id);
-	
+
 	List<Hashtag> findAllByDeletedFalse();
 
 }

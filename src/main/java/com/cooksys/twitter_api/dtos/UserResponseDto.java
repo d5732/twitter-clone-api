@@ -10,9 +10,10 @@ import java.security.Timestamp;
 @Data
 public class UserResponseDto {
 
-    private String username;
-    private Profile profile;
-    private Timestamp joined;
+	private String username;
 
+	private Profile profile;
+
+	private Timestamp joined;
 
 }
