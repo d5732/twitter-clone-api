@@ -1,6 +1,8 @@
 package com.cooksys.twitter_api.mappers;
 
 import java.util.List;
+
+import com.cooksys.twitter_api.dtos.TweetRequestDto;
 import org.mapstruct.Mapper;
 
 import com.cooksys.twitter_api.dtos.TweetResponseDto;
@@ -13,6 +15,6 @@ public interface TweetMapper {
 
 	List<TweetResponseDto> entitiesToDtos(List<Tweet> entities);
 
-	Tweet request_DTO_To_Entity(TweetResponseDto qDTO);
+	Tweet dtoToEntity(TweetRequestDto tweetRequestDto);
 
 }
