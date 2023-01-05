@@ -13,7 +13,7 @@ import com.cooksys.twitter_api.exceptions.NotAuthorizedException;
 
 import jakarta.servlet.http.HttpServletRequest;
 
-@ControllerAdvice(basePackages = { "com.cooksys.twitter_api.controllers" })
+@ControllerAdvice(basePackages = { "com.cooksys.twitter_api" })
 @ResponseBody
 public class TwitterControllerAdvice {
 
