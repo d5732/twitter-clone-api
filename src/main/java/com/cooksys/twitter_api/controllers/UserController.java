@@ -46,17 +46,15 @@ public class UserController {
     public UserResponseDto getUser(@PathVariable String username) {
         return userService.getUser(username);
     }
-//
+
+    //
 //    //PATCH users/@{username}
 //
-//    @PatchMapping("{username}")
-//    @ResponseStatus()
-//    public UserRequestDto updateUserProfile(@PathVariable String username) {
-//
-//        return null;
-//        // return userService.updateUserProfile(username);
-//
-//    }
+    @PatchMapping("@{username}")
+    @ResponseStatus(HttpStatus.OK)
+    public UserResponseDto updateUserProfile(@PathVariable String username, @RequestBody UserRequestDto userRequestDto) {
+        return userService.updateUserProfile(username, userRequestDto);
+    }
 //
 //    //DELETE users/@{username}
 //

@@ -63,7 +63,9 @@ public class UserServiceImpl implements UserService {
         if (!optionalUser.isPresent()) {
             throw new NotFoundException(String.format("User not found with username @%s", username));
         }
-        return userMapper.entityToDto(optionalUser.get());
+        UserResponseDto res = userMapper.entityToDto(optionalUser.get());
+        res.setJoined(optionalUser.get().getProfile().getJoined());
+        return res;
     }
 
     /**
@@ -71,18 +73,40 @@ public class UserServiceImpl implements UserService {
      * Updates the profile of a user with the given username. If no such user exists, the user is deleted, or the
      * provided credentials do not match the user, an error should be sent in lieu of a response. In the case of a
      * successful update, the returned user should contain the updated data.
-     *
+     * <p>
      * TODO: NEVER UPDATE JOINED TIMESTAMP!!!!!!!!
-     *
+     * <p>
      * #41
      */
     @Override
-    public UserResponseDto updateUserProfile(String username, CredentialsDto credentialsDto, ProfileDto profileDto) {
+    public UserResponseDto updateUserProfile(String username, UserRequestDto userRequestDto) {
+        CredentialsDto credentialsDto = userRequestDto.getCredentials();
+        ProfileDto profileDto = userRequestDto.getProfile();
         Optional<User> optionalUser = userRepository.findByCredentialsUsernameAndDeletedFalse(username);
         if (!optionalUser.isPresent() || !credentialsAreCorrect(optionalUser, credentialsDto)) {
             throw new BadRequestException("Credentials provided do not match an active user in the database");
         }
-        optionalUser.get().setProfile(profileMapper.dtoToEntity(profileDto));
+
+        /// {
+        //  "profile":  {}
+        //  }
+        if (userRequestDto.getProfile().equals(new UserRequestDto())) {
+            throw new BadRequestException("Profile is empty 401");
+        }
+
+        // check the fields to override non nulls
+        if (!profileDto.getEmail().isEmpty()) { // 500
+            optionalUser.get().getProfile().setEmail(profileDto.getEmail());
+        }
+        if (!profileDto.getPhone().isEmpty()) {
+            optionalUser.get().getProfile().setPhone(profileDto.getPhone());
+        }
+        if (!profileDto.getFirstName().isEmpty()) {
+            optionalUser.get().getProfile().setFirstName(profileDto.getFirstName());
+        }
+        if (!profileDto.getLastName().isEmpty()) {
+            optionalUser.get().getProfile().setLastName(profileDto.getLastName());
+        }
         userRepository.saveAndFlush(optionalUser.get());
         return userMapper.entityToDto(optionalUser.get());
     }
@@ -356,7 +380,7 @@ public class UserServiceImpl implements UserService {
         profile.setJoined(new Timestamp(System.currentTimeMillis()));
         user.setProfile(profile);
         UserResponseDto res = userMapper.entityToDto(userRepository.saveAndFlush(user));
-        System.out.println("~~~~~~~~~~~~~ "+user);
+        System.out.println("~~~~~~~~~~~~~ " + user);
         System.out.println("~~~~~~~~~~~~~ " + res);
         System.out.println(user.getProfile());
         System.out.println(user.getProfile().getJoined());
