@@ -62,7 +62,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public UserResponseDto getUser(String username) {
-        Optional<User> optionalUser = userRepository.findByUsernameAndDeletedFalse(username);
+        Optional<User> optionalUser = userRepository.findByCredentialsUsernameAndDeletedFalse(username);
         if (!optionalUser.isPresent()) {
             throw new NotFoundException(String.format("User not found with username @%s", username));
         }
@@ -78,7 +78,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public UserResponseDto updateUserProfile(String username, CredentialsDto credentialsDto, ProfileDto profileDto) {
-        Optional<User> optionalUser = userRepository.findByUsernameAndDeletedFalse(username);
+        Optional<User> optionalUser = userRepository.findByCredentialsUsernameAndDeletedFalse(username);
         if (!optionalUser.isPresent() || !credentialsAreCorrect(optionalUser, credentialsDto)) {
             throw new BadRequestException("Credentials provided do not match an active user in the database");
         }
@@ -99,7 +99,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public UserResponseDto deleteUser(String username, CredentialsDto credentialsDto) {
-        Optional<User> optionalUser = userRepository.findByUsernameAndDeletedFalse(username);
+        Optional<User> optionalUser = userRepository.findByCredentialsUsernameAndDeletedFalse(username);
         if (!optionalUser.isPresent() || !credentialsAreCorrect(optionalUser, credentialsDto)) {
             throw new BadRequestException("Credentials provided do not match an active user in the database");
         }
@@ -119,8 +119,8 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public void followUser(String username, CredentialsDto credentialsDto) {
-        Optional<User> optionalUserToFollow = userRepository.findByUsernameAndDeletedFalse(username);
-        Optional<User> optionalUser = userRepository.findByUsernameAndDeletedFalse(credentialsDto.getUsername());
+        Optional<User> optionalUserToFollow = userRepository.findByCredentialsUsernameAndDeletedFalse(username);
+        Optional<User> optionalUser = userRepository.findByCredentialsUsernameAndDeletedFalse(credentialsDto.getUsername());
         if (!optionalUser.isPresent() || !credentialsAreCorrect(optionalUser, credentialsDto)) {
             throw new BadRequestException("Credentials provided do not match an active user in the database");
         }
@@ -147,8 +147,8 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public void unfollowUser(String username, CredentialsDto credentialsDto) {
-        Optional<User> optionalUserToUnfollow = userRepository.findByUsernameAndDeletedFalse(username);
-        Optional<User> optionalUser = userRepository.findByUsernameAndDeletedFalse(credentialsDto.getUsername());
+        Optional<User> optionalUserToUnfollow = userRepository.findByCredentialsUsernameAndDeletedFalse(username);
+        Optional<User> optionalUser = userRepository.findByCredentialsUsernameAndDeletedFalse(credentialsDto.getUsername());
         if (!optionalUser.isPresent() || !credentialsAreCorrect(optionalUser, credentialsDto)) {
             throw new BadRequestException("Credentials provided do not match an active user in the database");
         }
@@ -174,7 +174,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public List<TweetResponseDto> getFeed(String username) {
-        Optional<User> optionalUser = userRepository.findByUsernameAndDeletedFalse(username);
+        Optional<User> optionalUser = userRepository.findByCredentialsUsernameAndDeletedFalse(username);
         if (!optionalUser.isPresent()) {
             throw new NotFoundException(String.format("User not found with username @%s", username));
         }
@@ -204,7 +204,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public List<TweetResponseDto> getTweets(String username) {
-        Optional<User> optionalUser = userRepository.findByUsernameAndDeletedFalse(username);
+        Optional<User> optionalUser = userRepository.findByCredentialsUsernameAndDeletedFalse(username);
         if (!optionalUser.isPresent()) {
             throw new NotFoundException(String.format("No active user found with username @%s", username));
         }
@@ -233,7 +233,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public List<TweetResponseDto> getMentions(String username) {
-        Optional<User> optionalUser = userRepository.findByUsernameAndDeletedFalse(username);
+        Optional<User> optionalUser = userRepository.findByCredentialsUsernameAndDeletedFalse(username);
         if (!optionalUser.isPresent()) {
             throw new NotFoundException(String.format("User not found with username @%s", username));
         }
@@ -260,7 +260,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public List<UserResponseDto> getFollowers(String username) {
-        Optional<User> optionalUser = userRepository.findByUsernameAndDeletedFalse(username);
+        Optional<User> optionalUser = userRepository.findByCredentialsUsernameAndDeletedFalse(username);
         if (!optionalUser.isPresent()) {
             throw new NotFoundException(String.format("User not found with username @%s", username));
         }
@@ -281,7 +281,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public List<UserResponseDto> getFollowing(String username) {
-        Optional<User> optionalUser = userRepository.findByUsernameAndDeletedFalse(username);
+        Optional<User> optionalUser = userRepository.findByCredentialsUsernameAndDeletedFalse(username);
         if (!optionalUser.isPresent()) {
             throw new NotFoundException(String.format("User not found with username @%s", username));
         }
@@ -329,7 +329,7 @@ public class UserServiceImpl implements UserService {
         if (!isValid(credentialsDto) || !isValid(profileDto)) {
             throw new BadRequestException("Required field(s) missing");
         }
-        Optional<User> optionalUser = userRepository.findByUsername(credentialsDto.getUsername());
+        Optional<User> optionalUser = userRepository.findByCredentialsUsername(credentialsDto.getUsername());
         if (optionalUser.isPresent()) {
             if (!credentialsAreCorrect(optionalUser, credentialsDto)) {
                 throw new BadRequestException("Username taken");
