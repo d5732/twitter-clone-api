@@ -9,13 +9,13 @@ import com.cooksys.twitter_api.exceptions.BadRequestException;
 import com.cooksys.twitter_api.exceptions.NotFoundException;
 import com.cooksys.twitter_api.mappers.CredentialsMapper;
 import com.cooksys.twitter_api.mappers.ProfileMapper;
-import com.cooksys.twitter_api.mappers.TweetMapper;
 import com.cooksys.twitter_api.mappers.UserMapper;
 import com.cooksys.twitter_api.repositories.UserRepository;
 import com.cooksys.twitter_api.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -71,6 +71,9 @@ public class UserServiceImpl implements UserService {
      * Updates the profile of a user with the given username. If no such user exists, the user is deleted, or the
      * provided credentials do not match the user, an error should be sent in lieu of a response. In the case of a
      * successful update, the returned user should contain the updated data.
+     *
+     * TODO: NEVER UPDATE JOINED TIMESTAMP!!!!!!!!
+     *
      * #41
      */
     @Override
@@ -347,8 +350,12 @@ public class UserServiceImpl implements UserService {
         // TODO: is there a Spring-like/mapper way to do this? Embeddeds complicate this
         User user = new User();
         user.setCredentials(credentials);
+        profile.setJoined(new Timestamp(System.currentTimeMillis()));
         user.setProfile(profile);
-        return userMapper.entityToDto(userRepository.saveAndFlush(user));
+        UserResponseDto res = userMapper.entityToDto(userRepository.saveAndFlush(user));
+        System.out.println("~~~~~~~~~~~~~ " + res);
+        res.setJoined(user.getProfile().getJoined());
+        return res;
     }
 
 }
