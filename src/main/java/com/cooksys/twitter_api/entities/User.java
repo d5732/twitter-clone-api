@@ -1,10 +1,10 @@
 package com.cooksys.twitter_api.entities;
 
-import java.util.List;
-
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Entity
 @NoArgsConstructor
@@ -27,17 +27,17 @@ public class User {
     @OneToMany
     private List<Tweet> tweets;
 
-    @ManyToMany(mappedBy = "user") // child
+    @ManyToMany(mappedBy = "following")
     private List<User> followers;
 
     @ManyToMany
     private List<User> following;
 
-    @ManyToMany(mappedBy = "tweet")
-    private List<Tweet> likes;
+    @ManyToMany
+    private List<Tweet> likesTweetList;
 
     @ManyToMany
-    private List<Tweet> mentions;
+    private List<Tweet> mentionsTweetList;
 
 
 }

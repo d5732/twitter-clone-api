@@ -1,45 +1,44 @@
 package com.cooksys.twitter_api.entities;
 
-import java.security.Timestamp;
-import java.util.List;
-import java.util.Optional;
-
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.security.Timestamp;
+import java.util.List;
 
 @Entity
 @NoArgsConstructor
 @Data
 public class Tweet {
-	
-	@Id
-  	@GeneratedValue
-	private Long id;
-	
+
+    @Id
+    @GeneratedValue
+    private Long id;
+
     @ManyToOne
-    @JoinColumn(name = "id")
-	private User author;
+    @JoinColumn(name = "user_id")
+    private User author;
 
-	private Timestamp posted;
-	
-	private boolean deleted;
-	
-    private Optional<String> content;
+    private Timestamp posted;
 
-    @OneToMany(mappedBy = "tweet")
-    private Optional<Tweet> inReplyTo;
+    private boolean deleted;
 
-    @OneToMany(mappedBy = "tweet")
-    private Optional<Tweet> repostOf;
+    private String content;
+
+    @ManyToOne
+    private Tweet inReplyTo;
+
+    @ManyToOne
+    private Tweet repostOf;
 
     @ManyToMany
     private List<Hashtag> hashtagList;
 
-    @ManyToMany(mappedBy="user_table")
-    private List<User> likes;
+    @ManyToMany(mappedBy = "likesTweetList")
+    private List<User> likesUserList;
 
-    @ManyToMany(mappedBy="user_table")
-    private List<User> mentions;
+    @ManyToMany(mappedBy = "mentionsTweetList")
+    private List<User> mentionsUserlist;
 
 }
