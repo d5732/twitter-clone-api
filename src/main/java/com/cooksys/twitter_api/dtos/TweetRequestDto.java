@@ -9,10 +9,8 @@ import java.util.List;
 @Data
 public class TweetRequestDto {
 
+	private String content;
 
-    private String content;
-
-
-    List<CredentialsDto> credentials;
+	List<CredentialsDto> credentials;
 
 }

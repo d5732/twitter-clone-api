@@ -10,17 +10,16 @@ import java.util.Optional;
 @Data
 public class TweetResponseDto {
 
-    private Long id;
+	private Long id;
 
-    private UserResponseDto author;
+	private UserResponseDto author;
 
-    private Timestamp posted;
+	private Timestamp posted;
 
-    private Optional<String> content;
+	private Optional<String> content;
 
-    private Optional<TweetResponseDto> inReplyTo;
+	private Optional<TweetResponseDto> inReplyTo;
 
-    private Optional<TweetResponseDto> repostOf;
-
+	private Optional<TweetResponseDto> repostOf;
 
 }

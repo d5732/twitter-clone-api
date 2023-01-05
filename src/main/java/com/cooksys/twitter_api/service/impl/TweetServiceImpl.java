@@ -9,20 +9,16 @@ import com.cooksys.twitter_api.dtos.TweetRequestDto;
 
 import com.cooksys.twitter_api.dtos.TweetResponseDto;
 
-
 import com.cooksys.twitter_api.repositories.TweetRepository;
-
 
 import com.cooksys.twitter_api.service.TweetService;
 
 import lombok.RequiredArgsConstructor;
 
-
 @Service
 @RequiredArgsConstructor
-public class TweetServiceImpl implements TweetService{
+public class TweetServiceImpl implements TweetService {
 
-	
 //	private final TweetRepository tweetRepository;
 
 	@Override
@@ -108,4 +104,5 @@ public class TweetServiceImpl implements TweetService{
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
 }

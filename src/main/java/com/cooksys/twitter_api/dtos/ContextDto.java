@@ -9,8 +9,10 @@ import java.util.List;
 @Data
 public class ContextDto {
 
-    private TweetResponseDto target;
-    private List<TweetResponseDto> after;
-    private List<TweetResponseDto> before;
+	private TweetResponseDto target;
+
+	private List<TweetResponseDto> after;
+
+	private List<TweetResponseDto> before;
 
 }

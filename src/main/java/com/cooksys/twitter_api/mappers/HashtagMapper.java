@@ -7,7 +7,8 @@ import com.cooksys.twitter_api.entities.Hashtag;
 
 @Mapper(componentModel = "spring")
 public interface HashtagMapper {
-    HashtagDto entityToDto(Hashtag hashtag);
+	HashtagDto entityToDto(Hashtag hashtag);
 
-    Hashtag DtoToEntity(HashtagDto hashtagDto);
+	Hashtag DtoToEntity(HashtagDto hashtagDto);
+
 }

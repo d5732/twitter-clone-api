@@ -1,8 +1,9 @@
 package com.cooksys.twitter_api.controllers;
 
-import com.cooksys.twitter_api.service.TweetService;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -129,4 +130,5 @@ public class TweetController {
 //
 //    public static class ProfileResponseDto {
 //    }
+
 }
