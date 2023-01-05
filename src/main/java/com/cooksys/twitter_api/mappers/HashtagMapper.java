@@ -9,5 +9,5 @@ import com.cooksys.twitter_api.entities.Hashtag;
 public interface HashtagMapper {
     HashtagDto entityToDto(Hashtag hashtag);
 
-    Hashtag DtoToEntity(HashtagDto hashtagDto);
+    Hashtag dtoToEntity(HashtagDto hashtagDto);
 }

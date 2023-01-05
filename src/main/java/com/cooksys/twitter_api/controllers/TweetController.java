@@ -1,7 +1,16 @@
 package com.cooksys.twitter_api.controllers;
 
+import com.cooksys.twitter_api.dtos.ContextDto;
+import com.cooksys.twitter_api.dtos.TweetRequestDto;
+import com.cooksys.twitter_api.dtos.TweetResponseDto;
+import com.cooksys.twitter_api.dtos.UserResponseDto;
+import com.cooksys.twitter_api.entities.User;
 import com.cooksys.twitter_api.service.TweetService;
 import lombok.RequiredArgsConstructor;
+
+import java.util.List;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -9,124 +18,87 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/tweets")
 public class TweetController {
 
-    private final TweetService tweetService;
+	  private final TweetService tweetService;
 
-    /**
-     * GET tweets endpoint
-     * #60
-     */
-    @GetMapping
-    public void getTweets() {
-    }
+	   
+	    @PostMapping
+	    public void postTweets() {
+	    }
 
-
-    /**
-     * POST tweets endpoint
-     * #59
-     */
-    @PostMapping
-    public void postTweets() {
-    }
+	    @PostMapping("/{id}/like")
+	    public void likeTweet() {
+	    }
 
 
-    /**
-     * @d5732 GET tweets/{id} endpoint
-     * #58
-     */
-    @GetMapping("/{id}/")
-    public void getTweet() {
-    }
+	    @PostMapping("/{id}/reply")
+	    public void replyToTweet() {
+	    }
 
 
-    /**
-     * @rhundal DELETE tweets/{id} endpoint
-     * #57
-     */
-    @DeleteMapping("/{id}/")
-    public void deleteTweet() {
-    }
+	    @PostMapping("/{id}/repost")
+	    public void repostTweet() {
+	    }
 
 
-    /**
-     * @d5732 POST tweets/{id}/like endpoint
-     * #56
-     */
-    @PostMapping("/{id}/like")
-    public void likeTweet() {
-    }
+	    @GetMapping("/{id}/tags")
+	    public void getTags() {
+	    }
+
+	    @GetMapping("/{id}/reposts")
+	    public void getReposts() {
+	    }
 
 
-    /**
-     * @rhundal POST tweets/{id}/reply endpoint
-     * #55
-     */
-    @PostMapping("/{id}/reply")
-    public void replyToTweet() {
-    }
+	    @GetMapping("/{id}/mentions")
+	    public void getMentions() {
+	    }
+
+	    public static class ProfileResponseDto {
+	    }
+	    
+	    ///////////////////////////////////////////////////////////////////
+	    
+	    @GetMapping
+	    public List<TweetResponseDto> getTweets() {
+			
+	    	
+	    	return tweetService.getTweets();
+	    
+
+	    }
+	    
+	    
+	    @GetMapping("tweets/{id}/replies")
+	    public List<TweetResponseDto> getReplies(@PathVariable Long id) {
+	    }
+	    
+	    @GetMapping("tweets/{id}/")
+	    public TweetResponseDto getTweet(@PathVariable Long id) {
+	    	
+	    	
+	    	return tweetService.getTweet(id);
+	    }
+
+	    @DeleteMapping("tweets/{id}")
+	    public TweetResponseDto deleteTweet(@PathVariable Long id, @RequestBody TweetRequestDto tweetRequestDto) {
+	    	
+			return tweetService.deleteTweet(id, tweetRequestDto);
+
+	    }
 
 
-    /**
-     * @d5732 POST tweets/{id}/repost endpoint
-     * #54
-     */
-    @PostMapping("/{id}/repost")
-    public void repostTweet() {
-    }
+	    @GetMapping("tweets/{id}/likes")
+	    public List<UserResponseDto> getLikes(@PathVariable Long id) {
+	    	
+			return tweetService.getLikes(id);
+
+	    }
 
 
-    /**
-     * @d5732 GET tweets/{id}/tags endpoint
-     * #53
-     */
-    @GetMapping("/{id}/tags")
-    public void getTags() {
-    }
+	    @GetMapping("tweets/{id}/context")
+	    public ContextDto getContext(@PathVariable Long id) {
+	    	
+			return tweetService.getContext(id);
 
-
-    /**
-     * @d5732 GET tweets/{id}/likes endpoint
-     * #52
-     */
-    @GetMapping("/{id}/likes")
-    public void getLikes() {
-    }
-
-
-    /**
-     * @d5732 GET tweets/{id}/context endpoint
-     * #51
-     */
-    @GetMapping("/{id}/context")
-    public void getContext() {
-    }
-
-
-    /**
-     * GET tweets/{id}/replies endpoint
-     * #50
-     */
-    @GetMapping("/{id}/replies")
-    public void getReplies() {
-    }
-
-
-    /**
-     * GET tweets/{id}/reposts endpoint
-     * #49
-     */
-    @GetMapping("/{id}/reposts")
-    public void getReposts() {
-    }
-
-
-    /**
-     * GET tweets/{id}/mentions endpoint
-     * #48
-     */
-    @GetMapping("/{id}/mentions")
-    public void getMentions() {
-    }
-
-    public static class ProfileResponseDto {
-    }
+	    }
 }
