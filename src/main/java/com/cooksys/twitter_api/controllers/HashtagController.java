@@ -10,5 +10,4 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/tags")
 public class HashtagController {
 
-
 }

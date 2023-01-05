@@ -7,11 +7,11 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 @Data
-public class HashtagDto {		// as ResponseDto
-	
+public class HashtagDto { // as ResponseDto
+
 	private String label;
-	
+
 	private Timestamp firstUsed;
-	
+
 	private Timestamp lastUsed;
 }

@@ -1,17 +1,17 @@
 package com.cooksys.twitter_api.repositories;
 
+import com.cooksys.twitter_api.entities.Tweet;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+@Repository
+public interface TweetRepository extends JpaRepository<Tweet, Long> {
 
-import com.cooksys.twitter_api.entities.Tweet;
+    Optional<Tweet> findByIdAndDeletedFalse(Long id);
 
-public interface TweetRepository extends JpaRepository<Tweet, Long>{
+    List<Tweet> findAllByDeletedFalse();
 
-
-	Optional<Tweet> findByIdAndDeletedFalse(Long id);
-	
-	List<Tweet> findAllByDeletedFalse();
-	
 }
