@@ -9,6 +9,6 @@ public interface ProfileMapper {
 
     ProfileDto entityToDto(Profile profile);
 
-    Profile DtoToEntity(ProfileDto profileDto);
+    Profile dtoToEntity(ProfileDto profileDto);
 
 }

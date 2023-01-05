@@ -3,8 +3,8 @@ package com.cooksys.twitter_api.dtos;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.security.Timestamp;
-import java.util.Optional;
+import java.sql.Timestamp;
+
 
 @NoArgsConstructor
 @Data
@@ -16,10 +16,10 @@ public class TweetResponseDto {
 
 	private Timestamp posted;
 
-	private Optional<String> content;
+	private String content;
 
-	private Optional<TweetResponseDto> inReplyTo;
+	private TweetResponseDto inReplyTo;
 
-	private Optional<TweetResponseDto> repostOf;
+	private TweetResponseDto repostOf;
 
 }

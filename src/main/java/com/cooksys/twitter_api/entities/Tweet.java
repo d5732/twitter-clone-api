@@ -4,7 +4,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.security.Timestamp;
+
+import java.sql.Timestamp;
 import java.util.List;
 
 @Entity
@@ -40,5 +41,6 @@ public class Tweet {
 
     @ManyToMany(mappedBy = "mentionsTweetList")
     private List<User> mentionsUserlist;
+
 
 }
