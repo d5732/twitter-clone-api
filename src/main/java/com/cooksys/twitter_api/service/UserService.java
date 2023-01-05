@@ -16,7 +16,7 @@ public interface UserService {
      * PATCH users/@{username}
      * #41
      */
-    UserResponseDto updateUserProfile(String username, CredentialsDto credentialsDto, ProfileDto profileDto);
+    UserResponseDto updateUserProfile(String username, UserRequestDto userRequestDto);
 
     /**
      * DELETE users/@{username}
