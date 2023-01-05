@@ -18,8 +18,9 @@ public class Hashtag {
     private String label;
     private Timestamp firstUsed;
     private Timestamp lastUsed;
-    
-    @ManytoMany(mappedBy="hashtagList")
+    private boolean deleted;
+
+    @ManyToMany(mappedBy = "hashtagList")
     private List<Tweet> tweetList;
 
 }
