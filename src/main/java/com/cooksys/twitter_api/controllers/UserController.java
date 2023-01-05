@@ -19,16 +19,16 @@ public class UserController {
     private final UserService userService;
 
 
-//
+    //
 //    //GET users
 //
-//    @GetMapping
-//    @ResponseStatus()
-//    public List<UserResponseDto> getAllUsers() {
-//         return null;
-//        // return userService.getAllUsers();
-//    }
-//
+    @GetMapping
+    @ResponseStatus(HttpStatus.OK)
+    public List<UserResponseDto> getAllUsers() {
+        return userService.getAllUsers();
+    }
+
+    //
 //
 //    //POST users
 //
@@ -39,19 +39,17 @@ public class UserController {
         return userService.createUser(userRequestDto);
     }
 
-//    //GET users/@{username}
-//
-//    @GetMapping("users/{username}")
-//    @ResponseStatus()
-//    public UserResponseDto userByUserName(@PathVariable String username) {
-//
-//        return null;
-//        // return userService.userByUserName(username);
-//    }
+    //GET users/@{username}
+
+    @GetMapping("@{username}")
+    @ResponseStatus(HttpStatus.OK)
+    public UserResponseDto getUser(@PathVariable String username) {
+        return userService.getUser(username);
+    }
 //
 //    //PATCH users/@{username}
 //
-//    @PatchMapping("users/{username}")
+//    @PatchMapping("{username}")
 //    @ResponseStatus()
 //    public UserRequestDto updateUserProfile(@PathVariable String username) {
 //
@@ -63,7 +61,7 @@ public class UserController {
 //    //DELETE users/@{username}
 //
 //
-//    @DeleteMapping("users/{username}")
+//    @DeleteMapping("{username}")
 //    @ResponseStatus()
 //    public UserResponseDto deleteUser(@PathVariable String username) {
 //
@@ -74,7 +72,7 @@ public class UserController {
 //
 //    //POST users/@{username}/follow
 //
-//    @PostMapping("users/{username}/follow")
+//    @PostMapping("{username}/follow")
 //    @ResponseStatus()
 //    public UserRequestDto follow(@PathVariable String username) {
 //
@@ -86,7 +84,7 @@ public class UserController {
 //
 //    //POST users/@{username}/unfollow
 //
-//    @PostMapping("users/{username}/unfollow")
+//    @PostMapping("{username}/unfollow")
 //    @ResponseStatus()
 //    public UserRequestDto unfollow(@PathVariable String username) {
 //
@@ -97,7 +95,7 @@ public class UserController {
 //
 //    //GET users/@{username}/feed
 //
-//    @GetMapping("users/{username}/feed")
+//    @GetMapping("{username}/feed")
 //    @ResponseStatus()
 //    public UserResponseDto feed(@PathVariable String username) {
 //
@@ -108,7 +106,7 @@ public class UserController {
 //
 //    //GET users/@{username}/tweets
 //
-//    @GetMapping("users/{username}/tweets")
+//    @GetMapping("{username}/tweets")
 //    @ResponseStatus()
 //    public UserResponseDto tweets(@PathVariable String username) {
 //
@@ -120,7 +118,7 @@ public class UserController {
 //    //GET users/@{username}/mentions
 //
 //
-//    @GetMapping("users/{username}/mentions")
+//    @GetMapping("{username}/mentions")
 //    @ResponseStatus()
 //    public UserResponseDto mentions(@PathVariable String username) {
 //
@@ -131,7 +129,7 @@ public class UserController {
 //
 //    //GET users/@{username}/followers
 //
-//    @GetMapping("users/{username}/mentions")
+//    @GetMapping("{username}/mentions")
 //    @ResponseStatus()
 //    public UserResponseDto followers(@PathVariable String username) {
 //
@@ -143,7 +141,7 @@ public class UserController {
 //    //GET users/@{username}/following
 //
 //
-//    @GetMapping("users/{username}/mentions")
+//    @GetMapping("{username}/mentions")
 //    @ResponseStatus()
 //    public UserResponseDto following(@PathVariable String username) {
 //

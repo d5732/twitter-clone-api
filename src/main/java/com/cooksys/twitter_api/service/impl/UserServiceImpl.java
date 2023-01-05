@@ -343,6 +343,9 @@ public class UserServiceImpl implements UserService {
             if (!credentialsAreCorrect(optionalUser, credentialsDto)) {
                 throw new BadRequestException("Username taken");
             }
+            if (!optionalUser.get().isDeleted()) {
+                throw new BadRequestException("Username taken");
+            }
             return userMapper.entityToDto(userRepository.saveAndFlush(optionalUser.get()));
         }
         Credentials credentials = credentialsMapper.dtoToEntity(credentialsDto);
@@ -353,7 +356,10 @@ public class UserServiceImpl implements UserService {
         profile.setJoined(new Timestamp(System.currentTimeMillis()));
         user.setProfile(profile);
         UserResponseDto res = userMapper.entityToDto(userRepository.saveAndFlush(user));
+        System.out.println("~~~~~~~~~~~~~ "+user);
         System.out.println("~~~~~~~~~~~~~ " + res);
+        System.out.println(user.getProfile());
+        System.out.println(user.getProfile().getJoined());
         res.setJoined(user.getProfile().getJoined());
         return res;
     }
