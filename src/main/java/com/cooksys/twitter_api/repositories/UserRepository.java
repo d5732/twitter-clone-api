@@ -10,12 +10,12 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    Optional<User> findByUsernameAndDeletedFalse(String username);
+    Optional<User> findByCredentialsUsernameAndDeletedFalse(String username);
 
     List<User> findAllByDeletedFalse();
 
     List<User> findAllByDeletedFalseAndIdIn(List<Long> ids);
 
-    Optional<User> findByUsername(String username);
+    Optional<User> findByCredentialsUsername(String username);
 
 }
