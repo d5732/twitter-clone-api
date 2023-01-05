@@ -3,7 +3,7 @@ package com.cooksys.twitter_api.dtos;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.security.Timestamp;
+import java.sql.Timestamp;
 import java.util.Optional;
 
 @NoArgsConstructor
