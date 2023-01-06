@@ -10,15 +10,15 @@ public interface TweetService {
 
     // To do
 	  
-	  ResponseEntity<TweetRequestDto> createTweetReply(@PathVariable TweetRequestDto tweetRequestDto);
+	  ResponseEntity<TweetRequestDto> createTweetReply(TweetRequestDto tweetRequestDto);
 
 	  
 	  ResponseEntity<TweetResponseDto> getTags(Long id);
 	  
-	  ResponseEntity<TweetResponseDto> getReposts(Long id);
+	  List<TweetResponseDto> getReposts(Long id);
 	  
 	  
-	  ResponseEntity<TweetResponseDto> getMentions(Long id);
+	  List<UserResponseDto> getMentions(Long id);
 	  
 
 	  ////////////////////////////////////////////////////////////////////////////////////////////////

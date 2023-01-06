@@ -11,9 +11,10 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/tweets")
 public class TweetController {
-
+	
     private final TweetService tweetService;
 
+    
 
     @PostMapping
     public TweetResponseDto createTweet(@RequestBody TweetRequestDto tweetRequestDto) {
@@ -26,11 +27,7 @@ public class TweetController {
 	    	return tweetService.replyToTweet(id, tweetRequestDto);
 	    	
 	    }
-
-
-    @PostMapping("/{id}/reply")
-    public void replyToTweet() {
-    }
+     
 
 	    @PostMapping("/{id}/repost")
 	    public TweetResponseDto repostTweet(@PathVariable Long id, @RequestBody TweetRequestDto tweetRequestDto) {
@@ -38,15 +35,13 @@ public class TweetController {
 	    	return tweetService.repostTweet(id, tweetRequestDto);
 	    }
 
-    @PostMapping("/{id}/repost")
-    public void repostTweet() {
-    }
-
 
     @GetMapping("/{id}/tags")
     public void getTags() {
+    
     }
 
+	    
     @GetMapping("/{id}/reposts")
     public List<TweetResponseDto> getReposts(@PathVariable Long id) {
         return  tweetService.getReplies(id);
@@ -84,7 +79,7 @@ public class TweetController {
         return tweetService.getReplies(id);
     }
 
-    @GetMapping("tweets/{id}/")
+    @GetMapping("tweets/{id}")
     public TweetResponseDto getTweet(@PathVariable Long id) {
 
 
@@ -113,4 +108,5 @@ public class TweetController {
         return tweetService.getContext(id);
 
     }
+    
 }

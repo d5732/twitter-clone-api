@@ -288,6 +288,8 @@ public class TweetServiceImpl implements TweetService {
             throw new NotFoundException("No tweet found with id: " + id);
 
         }
+        
+        System.out.println("hello- ");
 
         return tweetMapper.entityToDto(optionalTweet.get());
 
