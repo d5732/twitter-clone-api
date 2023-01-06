@@ -113,16 +113,32 @@ public class TweetServiceImpl implements TweetService {
 
 
     @Override
-    public ResponseEntity<TweetResponseDto> getReposts(Long id) {
-        // TODO Auto-generated method stub
-        return null;
+    public List<TweetResponseDto> getReposts(Long id) {
+
+        //todo: untested method, waiting for post retweet
+        Optional<Tweet> optionalTweet = tweetRepository.findByIdAndDeletedFalse(id);
+        if (optionalTweet.isEmpty()) {
+            throw new NotFoundException("Tweet not found with id: " + id);
+        }
+        List<Tweet> allTweets = tweetRepository.findAllByDeletedFalse();
+
+
+
+        ArrayList<Tweet> reposts = new ArrayList<>();
+        for (Tweet tweet : allTweets) {
+            if (tweet.getRepostOf().equals(optionalTweet.get())) {
+                reposts.add(tweet);
+            }
+        }
+        reposts.sort(new SortByPostedReverse());
+        return tweetMapper.entitiesToDtos(reposts);
     }
 
     @Override
     public List<UserResponseDto> getMentions(Long id) {
         Optional<Tweet> optionalTweet = tweetRepository.findByIdAndDeletedFalse(id);
         if (optionalTweet.isEmpty()) {
-            throw new NotFoundException("tweet not found with id: " + id);
+            throw new NotFoundException("Tweet not found with id: " + id);
         }
         List<User> mentionsUserList = new ArrayList<>(optionalTweet.get().getMentionsUserlist());
 
