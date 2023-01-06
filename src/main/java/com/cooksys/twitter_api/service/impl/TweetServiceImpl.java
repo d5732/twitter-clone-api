@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import static com.cooksys.twitter_api.helpers.Helpers.*;
 
 
 @Service
@@ -31,11 +32,56 @@ public class TweetServiceImpl implements TweetService {
     private final TweetRepository tweetRepository;
 
 
+    /**
+     * Creates a new simple tweet, with the author set to the user identified by the credentials in the request body.
+     * If the given credentials do not match an active user in the database, an error should be sent in lieu of a
+     * response.
+     * <p>
+     * The response should contain the newly-created tweet.
+     * Because this always creates a simple tweet, it must have a content property and may not have inReplyTo or
+     * repostOf properties.
+     * <p>
+     * IMPORTANT: when a tweet with content is created, the server must process the tweet's content for @{username}
+     * mentions and #{hashtag} tags. There is no way to create hashtags or create mentions from the API, so this must be
+     * handled automatically!
+     *
+     * Request
+     * {
+     *   content: 'string',
+     *   credentials: 'Credentials'
+     * }
+     * Response
+     * 'Tweet'
+     */
     @Override
     public TweetResponseDto createTweet(TweetRequestDto tweetRequestDto) {
-        // TODO Auto-generated method stub
+        CredentialsDto credentialsDto = tweetRequestDto.getCredentials();
+
+        // 1. If the given credentials do not match an active user in the database, an error should be sent
+        // 2. It must have a content property
+        // Both are handled in the helper.
+        if (!isValidTweetRequestDto(tweetRequestDto)) {
+            throw new BadRequestException("Malformed tweet request");
+        }
+
+        // Get the author user if it's active
+        Optional<User> optionalAuthor = userRepository.findByCredentialsUsernameAndDeletedFalse(credentialsDto.getUsername());
+
+        // If the given credentials do not match an active user in the database, an error should be sent
+        if (!credentialsAreCorrect(optionalAuthor, credentialsDto)) {
+            throw new BadRequestException("Bad credentials or user is not active");
+        }
+
+        //     * IMPORTANT: when a tweet with content is created, the server must process the tweet's content for @{username}
+        //     * mentions and #{hashtag} tags. There is no way to create hashtags or create mentions from the API, so this must be
+        //     * handled automatically!
+        parseAndSaveMentions(tweetRequestDto);
+        parseAndSaveHashtags(tweetRequestDto);
+
         return null;
     }
+
+
 
     @Override
     public ResponseEntity<TweetRequestDto> createTweetReply(TweetRequestDto tweetRequestDto) {
@@ -213,23 +259,23 @@ public class TweetServiceImpl implements TweetService {
 
         return null;
     }
-	
+
 	/*
 	public Tweet getParentTweet(Tweet t) {		// helper method
 
 
 		Long id = t.getId();
-		
+
 		if(!t.isDeleted() && !t.getInReplyTo().) {		// doubt here
-			
+
 			return t;
 		}
-		
-		
+
+
 		return null;
 
 	}
-	
+
 	*/
 
     @Override
