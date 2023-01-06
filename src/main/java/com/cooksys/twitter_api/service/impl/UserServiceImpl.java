@@ -38,17 +38,23 @@ public class UserServiceImpl implements UserService {
     }
 
     boolean credentialsAreCorrect(Optional<User> optionalUser, CredentialsDto credentialsDto) {
-        return optionalUser.isPresent() &&
-                optionalUser.get().getCredentials().getUsername().equals(credentialsDto.getUsername()) &&
-                optionalUser.get().getCredentials().getPassword().equals(credentialsDto.getPassword());
+        return optionalUser.isPresent()
+                && optionalUser.get().getCredentials().getUsername().equals(credentialsDto.getUsername())
+                && optionalUser.get().getCredentials().getPassword().equals(credentialsDto.getPassword());
     }
 
     private boolean isValid(ProfileDto profileDto) {
-        return !profileDto.getEmail().isEmpty();
+        return !(profileDto == null)
+                && !(profileDto.getEmail() == null)
+                && !profileDto.getEmail().isEmpty();
     }
 
     private boolean isValid(CredentialsDto credentialsDto) {
-        return !credentialsDto.getUsername().isEmpty() && !credentialsDto.getPassword().isEmpty();
+        return !(credentialsDto == null)
+                && !(credentialsDto.getUsername() == null)
+                && !(credentialsDto.getPassword() == null)
+                && !credentialsDto.getUsername().isEmpty()
+                && !credentialsDto.getPassword().isEmpty();
     }
 
     /**
