@@ -7,6 +7,7 @@ import com.cooksys.twitter_api.entities.Tweet;
 import com.cooksys.twitter_api.entities.User;
 import com.cooksys.twitter_api.exceptions.BadRequestException;
 import com.cooksys.twitter_api.exceptions.NotFoundException;
+import com.cooksys.twitter_api.helpers.SortByPostedReverse;
 import com.cooksys.twitter_api.mappers.CredentialsMapper;
 import com.cooksys.twitter_api.mappers.ProfileMapper;
 import com.cooksys.twitter_api.mappers.UserMapper;
@@ -17,9 +18,10 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+
+import static com.cooksys.twitter_api.helpers.Helpers.*;
 
 @Service
 @RequiredArgsConstructor
@@ -31,25 +33,6 @@ public class UserServiceImpl implements UserService {
     private final ProfileMapper profileMapper;
     private final CredentialsMapper credentialsMapper;
 
-    private static class SortByPostedReverse implements Comparator<Tweet> {
-        public int compare(Tweet a, Tweet b) {
-            return (int) (b.getPosted().getTime() - a.getPosted().getTime());
-        }
-    }
-
-    boolean credentialsAreCorrect(Optional<User> optionalUser, CredentialsDto credentialsDto) {
-        return optionalUser.isPresent() &&
-                optionalUser.get().getCredentials().getUsername().equals(credentialsDto.getUsername()) &&
-                optionalUser.get().getCredentials().getPassword().equals(credentialsDto.getPassword());
-    }
-
-    private boolean isValid(ProfileDto profileDto) {
-        return !profileDto.getEmail().isEmpty();
-    }
-
-    private boolean isValid(CredentialsDto credentialsDto) {
-        return !credentialsDto.getUsername().isEmpty() && !credentialsDto.getPassword().isEmpty();
-    }
 
     /**
      * GET users/@{username}
@@ -60,12 +43,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponseDto getUser(String username) {
         Optional<User> optionalUser = userRepository.findByCredentialsUsernameAndDeletedFalse(username);
-        if (!optionalUser.isPresent()) {
+        if (optionalUser.isEmpty()) {
             throw new NotFoundException(String.format("User not found with username @%s", username));
         }
-        UserResponseDto res = userMapper.entityToDto(optionalUser.get());
-        res.setJoined(optionalUser.get().getProfile().getJoined());
-        return res;
+        return userMapper.entityToDto(optionalUser.get());
     }
 
     /**
@@ -83,32 +64,33 @@ public class UserServiceImpl implements UserService {
         CredentialsDto credentialsDto = userRequestDto.getCredentials();
         ProfileDto profileDto = userRequestDto.getProfile();
         Optional<User> optionalUser = userRepository.findByCredentialsUsernameAndDeletedFalse(username);
-        if (!optionalUser.isPresent() || !credentialsAreCorrect(optionalUser, credentialsDto)) {
+        if (optionalUser.isEmpty() || !credentialsAreCorrect(optionalUser, credentialsDto)) {
             throw new BadRequestException("Credentials provided do not match an active user in the database");
         }
 
         /// {
         //  "profile":  {}
         //  }
-        if (userRequestDto.getProfile().equals(new UserRequestDto())) {
-            throw new BadRequestException("Profile is empty 401");
+//         or {} // i.e. profile field absent
+        if (userRequestDto.getProfile() == null) {
+            throw new BadRequestException("Bad profile in request");
         }
 
         // check the fields to override non nulls
-        if (!profileDto.getEmail().isEmpty()) { // 500
+        if (profileDto.getEmail() != null && !profileDto.getEmail().isEmpty()) { // 500
             optionalUser.get().getProfile().setEmail(profileDto.getEmail());
         }
-        if (!profileDto.getPhone().isEmpty()) {
+        if (profileDto.getPhone() != null && !profileDto.getPhone().isEmpty()) {
             optionalUser.get().getProfile().setPhone(profileDto.getPhone());
         }
-        if (!profileDto.getFirstName().isEmpty()) {
+        if (profileDto.getFirstName() != null && !profileDto.getFirstName().isEmpty()) {
             optionalUser.get().getProfile().setFirstName(profileDto.getFirstName());
         }
-        if (!profileDto.getLastName().isEmpty()) {
+        if (profileDto.getLastName() != null && !profileDto.getLastName().isEmpty()) {
             optionalUser.get().getProfile().setLastName(profileDto.getLastName());
         }
-        userRepository.saveAndFlush(optionalUser.get());
-        return userMapper.entityToDto(optionalUser.get());
+        //todo: UNIMPORTANT, but it'd be best practice to guard DB from a no-change saveAndFlush;
+        return userMapper.entityToDto(userRepository.saveAndFlush(optionalUser.get()));
     }
 
 
@@ -124,7 +106,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponseDto deleteUser(String username, CredentialsDto credentialsDto) {
         Optional<User> optionalUser = userRepository.findByCredentialsUsernameAndDeletedFalse(username);
-        if (!optionalUser.isPresent() || !credentialsAreCorrect(optionalUser, credentialsDto)) {
+        if (optionalUser.isEmpty() || !credentialsAreCorrect(optionalUser, credentialsDto)) {
             throw new BadRequestException("Credentials provided do not match an active user in the database");
         }
         optionalUser.get().setDeleted(true);
@@ -145,10 +127,10 @@ public class UserServiceImpl implements UserService {
     public void followUser(String username, CredentialsDto credentialsDto) {
         Optional<User> optionalUserToFollow = userRepository.findByCredentialsUsernameAndDeletedFalse(username);
         Optional<User> optionalUser = userRepository.findByCredentialsUsernameAndDeletedFalse(credentialsDto.getUsername());
-        if (!optionalUser.isPresent() || !credentialsAreCorrect(optionalUser, credentialsDto)) {
+        if (optionalUser.isEmpty() || !credentialsAreCorrect(optionalUser, credentialsDto)) {
             throw new BadRequestException("Credentials provided do not match an active user in the database");
         }
-        if (!optionalUserToFollow.isPresent()) {
+        if (optionalUserToFollow.isEmpty()) {
             throw new BadRequestException("No such followable user exists");
         }
         if (optionalUser.get().getFollowing().contains(optionalUserToFollow.get())) {
@@ -173,10 +155,10 @@ public class UserServiceImpl implements UserService {
     public void unfollowUser(String username, CredentialsDto credentialsDto) {
         Optional<User> optionalUserToUnfollow = userRepository.findByCredentialsUsernameAndDeletedFalse(username);
         Optional<User> optionalUser = userRepository.findByCredentialsUsernameAndDeletedFalse(credentialsDto.getUsername());
-        if (!optionalUser.isPresent() || !credentialsAreCorrect(optionalUser, credentialsDto)) {
+        if (optionalUser.isEmpty() || !credentialsAreCorrect(optionalUser, credentialsDto)) {
             throw new BadRequestException("Credentials provided do not match an active user in the database");
         }
-        if (!optionalUserToUnfollow.isPresent()) {
+        if (optionalUserToUnfollow.isEmpty()) {
             throw new BadRequestException("No such followable user exists");
         }
         if (!optionalUser.get().getFollowing().contains(optionalUserToUnfollow.get())) {
@@ -199,7 +181,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<TweetResponseDto> getFeed(String username) {
         Optional<User> optionalUser = userRepository.findByCredentialsUsernameAndDeletedFalse(username);
-        if (!optionalUser.isPresent()) {
+        if (optionalUser.isEmpty()) {
             throw new NotFoundException(String.format("User not found with username @%s", username));
         }
         ArrayList<Tweet> feed = new ArrayList<>();
@@ -231,7 +213,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<TweetResponseDto> getTweets(String username) {
         Optional<User> optionalUser = userRepository.findByCredentialsUsernameAndDeletedFalse(username);
-        if (!optionalUser.isPresent()) {
+        if (optionalUser.isEmpty()) {
             throw new NotFoundException(String.format("No active user found with username @%s", username));
         }
         ArrayList<Tweet> deleted = new ArrayList<>();
@@ -243,10 +225,10 @@ public class UserServiceImpl implements UserService {
         for (Tweet tweet : deleted) {
             optionalUser.get().getTweets().remove(tweet);
         }
-        //TODO: Check sort order
+        // TODO: Check sort order
         optionalUser.get().getMentionsTweetList().sort(new SortByPostedReverse());
-//        return tweetMapper.entitiesToDtos(optionalUser.get().getTweets());
-//    todo: fix or replace entitiesToDtos with for loop
+        // return tweetMapper.entitiesToDtos(optionalUser.get().getTweets());
+        // todo: fix or replace entitiesToDtos with for loop
         return null;
     }
 
@@ -263,7 +245,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<TweetResponseDto> getMentions(String username) {
         Optional<User> optionalUser = userRepository.findByCredentialsUsernameAndDeletedFalse(username);
-        if (!optionalUser.isPresent()) {
+        if (optionalUser.isEmpty()) {
             throw new NotFoundException(String.format("User not found with username @%s", username));
         }
         ArrayList<Tweet> deleted = new ArrayList<>();
@@ -292,7 +274,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserResponseDto> getFollowers(String username) {
         Optional<User> optionalUser = userRepository.findByCredentialsUsernameAndDeletedFalse(username);
-        if (!optionalUser.isPresent()) {
+        if (optionalUser.isEmpty()) {
             throw new NotFoundException(String.format("User not found with username @%s", username));
         }
         ArrayList<UserResponseDto> result = new ArrayList<>();
@@ -313,7 +295,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserResponseDto> getFollowing(String username) {
         Optional<User> optionalUser = userRepository.findByCredentialsUsernameAndDeletedFalse(username);
-        if (!optionalUser.isPresent()) {
+        if (optionalUser.isEmpty()) {
             throw new NotFoundException(String.format("User not found with username @%s", username));
         }
         ArrayList<User> deleted = new ArrayList<>();
@@ -359,7 +341,7 @@ public class UserServiceImpl implements UserService {
     public UserResponseDto createUser(UserRequestDto userRequestDto) {
         CredentialsDto credentialsDto = userRequestDto.getCredentials();
         ProfileDto profileDto = userRequestDto.getProfile();
-        if (!isValid(credentialsDto) || !isValid(profileDto)) {
+        if (!isValidCredentialsDto(credentialsDto) || !isValidProfileDto(profileDto)) {
             throw new BadRequestException("Required field(s) missing");
         }
         Optional<User> optionalUser = userRepository.findByCredentialsUsername(credentialsDto.getUsername());
@@ -374,18 +356,12 @@ public class UserServiceImpl implements UserService {
         }
         Credentials credentials = credentialsMapper.dtoToEntity(credentialsDto);
         Profile profile = profileMapper.dtoToEntity(profileDto);
-        // TODO: is there a Spring-like/mapper way to do this? Embeddeds complicate this
+        // TODO: is there a Spring-like/mapper way to do this without new'ing? Embeddeds complicate this
         User user = new User();
         user.setCredentials(credentials);
-        profile.setJoined(new Timestamp(System.currentTimeMillis()));
         user.setProfile(profile);
-        UserResponseDto res = userMapper.entityToDto(userRepository.saveAndFlush(user));
-        System.out.println("~~~~~~~~~~~~~ " + user);
-        System.out.println("~~~~~~~~~~~~~ " + res);
-        System.out.println(user.getProfile());
-        System.out.println(user.getProfile().getJoined());
-        res.setJoined(user.getProfile().getJoined());
-        return res;
+        user.setJoined(new Timestamp(System.currentTimeMillis()));
+        return userMapper.entityToDto(userRepository.saveAndFlush(user));
     }
 
 }

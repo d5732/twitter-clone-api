@@ -24,6 +24,7 @@ public class Hashtag {
 
 	private boolean deleted;
 
+
 	@ManyToMany(mappedBy = "hashtagList")
 	private List<Tweet> tweetList;
 
