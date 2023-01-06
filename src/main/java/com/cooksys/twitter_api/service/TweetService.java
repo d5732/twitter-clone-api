@@ -17,16 +17,10 @@ import com.cooksys.twitter_api.dtos.UserRequestDto;
 
 public interface TweetService {
 	
-		  
-	  TweetResponseDto createTweet(@PathVariable TweetRequestDto tweetRequestDto);
 
+	// To do
 	  
 	  ResponseEntity<TweetRequestDto> createTweetReply(@PathVariable TweetRequestDto tweetRequestDto);
-
-	  ResponseEntity<TweetRequestDto> replyToTweet(Long ID, @PathVariable TweetRequestDto tweetRequestDto);
-	  
-	  	  
-	  ResponseEntity<TweetRequestDto> repostTweet(Long ID, @PathVariable TweetRequestDto tweetRequestDto);
 
 	  
 	  ResponseEntity<TweetResponseDto> getTags(Long id);
@@ -39,20 +33,29 @@ public interface TweetService {
 
 	  ////////////////////////////////////////////////////////////////////////////////////////////////
 	  
+	  
+	  // Active
+		   
+	  TweetResponseDto replyToTweet(Long id, TweetRequestDto tweetRequestDto);
 
-	  void likeTweet(@PathVariable Long id, @RequestBody UserRequestDto userRequestDto);
+
+	  TweetResponseDto createTweet(TweetRequestDto tweetRequestDto);
+
+	  TweetResponseDto repostTweet(Long ID, TweetRequestDto tweetRequestDto);
+	  
+	  void likeTweet(Long id, UserRequestDto userRequestDto);
 	  
 	  List<TweetResponseDto> getTweets();
 		  
-	  TweetResponseDto deleteTweet(@PathVariable Long id, @RequestBody TweetRequestDto tweetRequestDto);	
+	  TweetResponseDto deleteTweet(Long id, TweetRequestDto tweetRequestDto);	
 
-	  List<UserResponseDto> getLikes(@PathVariable Long id);
+	  List<UserResponseDto> getLikes(Long id);
 
 	  TweetResponseDto getTweet(Long id);
 	  
-	  ContextDto getContext(@PathVariable Long id);
+	  ContextDto getContext(Long id);
 	  
-	  List<TweetResponseDto> getReplies(@PathVariable Long id);
+	  List<TweetResponseDto> getReplies(Long id);
 
 
 

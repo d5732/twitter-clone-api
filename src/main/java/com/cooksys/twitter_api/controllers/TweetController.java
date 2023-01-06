@@ -22,12 +22,17 @@ public class TweetController {
 
 
 	    @PostMapping("/{id}/reply")
-	    public void replyToTweet() {
+	    public TweetResponseDto replyToTweet(@PathVariable Long id, @RequestBody TweetRequestDto tweetRequestDto) {
+	    	
+	    	return tweetService.replyToTweet(id, tweetRequestDto);
+	    	
 	    }
 
 
 	    @PostMapping("/{id}/repost")
-	    public void repostTweet() {
+	    public TweetResponseDto repostTweet(@PathVariable Long id, @RequestBody TweetRequestDto tweetRequestDto) {
+	    	
+	    	return tweetService.repostTweet(id, tweetRequestDto);
 	    }
 
 
