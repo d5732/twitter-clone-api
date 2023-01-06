@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
 import static com.cooksys.twitter_api.helpers.Helpers.*;
 
 
@@ -44,11 +45,11 @@ public class TweetServiceImpl implements TweetService {
      * IMPORTANT: when a tweet with content is created, the server must process the tweet's content for @{username}
      * mentions and #{hashtag} tags. There is no way to create hashtags or create mentions from the API, so this must be
      * handled automatically!
-     *
+     * <p>
      * Request
      * {
-     *   content: 'string',
-     *   credentials: 'Credentials'
+     * content: 'string',
+     * credentials: 'Credentials'
      * }
      * Response
      * 'Tweet'
@@ -56,6 +57,7 @@ public class TweetServiceImpl implements TweetService {
     @Override
     public TweetResponseDto createTweet(TweetRequestDto tweetRequestDto) {
         CredentialsDto credentialsDto = tweetRequestDto.getCredentials();
+        System.out.println("hello");
 
         // 1. If the given credentials do not match an active user in the database, an error should be sent
         // 2. It must have a content property
@@ -77,11 +79,9 @@ public class TweetServiceImpl implements TweetService {
         //     * handled automatically!
         parseAndSaveMentions(tweetRequestDto);
         parseAndSaveHashtags(tweetRequestDto);
-
-        return null;
+        System.out.println("salutations");
+        return tweetMapper.entityToDto(tweetRepository.saveAndFlush(tweetMapper.dtoToEntity(tweetRequestDto)));
     }
-
-
 
     @Override
     public ResponseEntity<TweetRequestDto> createTweetReply(TweetRequestDto tweetRequestDto) {

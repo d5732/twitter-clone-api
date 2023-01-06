@@ -42,8 +42,8 @@ public class Helpers {
     }
 
 
-    private static final Pattern mentionPattern = Pattern.compile("@[a-z0-9]+");
-    private static final Pattern hashtagPattern = Pattern.compile("#[a-z0-9]+");
+    private static final Pattern mentionPattern = Pattern.compile("@[a-zA-Z0-9]+");
+    private static final Pattern hashtagPattern = Pattern.compile("#[a-zA-Z0-9]+");
 
 
     //parseMentions: Guard null pointer by validating the DTO before invoking this method
