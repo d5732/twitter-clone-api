@@ -6,6 +6,8 @@ import com.cooksys.twitter_api.dtos.TweetResponseDto;
 import com.cooksys.twitter_api.dtos.UserResponseDto;
 import com.cooksys.twitter_api.entities.User;
 import com.cooksys.twitter_api.service.TweetService;
+import com.cooksys.twitter_api.dtos.UserRequestDto;
+
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
@@ -23,10 +25,6 @@ public class TweetController {
 	   
 	    @PostMapping
 	    public void postTweets() {
-	    }
-
-	    @PostMapping("/{id}/like")
-	    public void likeTweet() {
 	    }
 
 
@@ -58,6 +56,15 @@ public class TweetController {
 	    
 	    ///////////////////////////////////////////////////////////////////
 	    
+	    @PostMapping("/{id}/like")
+	    public void likeTweet(@PathVariable Long id, @RequestBody UserRequestDto userRequestDto) {
+	    	
+	    	tweetService.likeTweet(id, userRequestDto);
+
+	    }
+
+	
+	    
 	    @GetMapping
 	    public List<TweetResponseDto> getTweets() {
 			
@@ -67,9 +74,10 @@ public class TweetController {
 
 	    }
 	    
-	    
 	    @GetMapping("tweets/{id}/replies")
 	    public List<TweetResponseDto> getReplies(@PathVariable Long id) {
+	    	
+	    	return tweetService.getReplies(id);
 	    }
 	    
 	    @GetMapping("tweets/{id}/")
@@ -96,7 +104,7 @@ public class TweetController {
 
 
 	    @GetMapping("tweets/{id}/context")
-	    public ContextDto getContext(@PathVariable Long id) {
+	    public ContextDto getContext(@PathVariable Long id) {		// 
 	    	
 			return tweetService.getContext(id);
 

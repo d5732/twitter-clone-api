@@ -1,9 +1,6 @@
 package com.cooksys.twitter_api.service;
 
-import com.cooksys.twitter_api.dtos.CredentialsDto;
-import com.cooksys.twitter_api.dtos.ProfileDto;
-import com.cooksys.twitter_api.dtos.TweetResponseDto;
-import com.cooksys.twitter_api.dtos.UserResponseDto;
+import com.cooksys.twitter_api.dtos.*;
 
 import java.util.List;
 
@@ -79,5 +76,5 @@ public interface UserService {
      * POST users
      * #43
      */
-    UserResponseDto createUser(CredentialsDto credentialsDto, ProfileDto profileDto);
+    UserResponseDto createUser(UserRequestDto userRequestDto);
 }

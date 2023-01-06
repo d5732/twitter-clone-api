@@ -12,6 +12,7 @@ import com.cooksys.twitter_api.dtos.TweetRequestDto;
 import com.cooksys.twitter_api.dtos.TweetResponseDto;
 import com.cooksys.twitter_api.dtos.UserResponseDto;
 import com.cooksys.twitter_api.entities.User;
+import com.cooksys.twitter_api.dtos.UserRequestDto;
 
 
 public interface TweetService {
@@ -20,8 +21,6 @@ public interface TweetService {
 	  ResponseEntity<TweetResponseDto> postTweets(@PathVariable TweetResponseDto tweetResponseDto);
 
 	  
-	  TweetResponseDto likeTweet(Long id);
-
 	  ResponseEntity<TweetRequestDto> createTweetReply(@PathVariable TweetRequestDto tweetRequestDto);
 
 	  ResponseEntity<TweetRequestDto> replyToTweet(Long ID, @PathVariable TweetRequestDto tweetRequestDto);
@@ -41,6 +40,8 @@ public interface TweetService {
 	  ////////////////////////////////////////////////////////////////////////////////////////////////
 	  
 
+	  void likeTweet(@PathVariable Long id, @RequestBody UserRequestDto userRequestDto);
+	  
 	  List<TweetResponseDto> getTweets();
 		  
 	  TweetResponseDto deleteTweet(@PathVariable Long id, @RequestBody TweetRequestDto tweetRequestDto);	
