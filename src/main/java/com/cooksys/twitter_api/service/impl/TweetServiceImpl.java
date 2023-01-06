@@ -6,6 +6,7 @@ import com.cooksys.twitter_api.entities.User;
 import com.cooksys.twitter_api.exceptions.BadRequestException;
 import com.cooksys.twitter_api.exceptions.NotFoundException;
 import com.cooksys.twitter_api.mappers.TweetMapper;
+import com.cooksys.twitter_api.mappers.UserMapper;
 import com.cooksys.twitter_api.repositories.HashtagRepository;
 import com.cooksys.twitter_api.repositories.TweetRepository;
 import com.cooksys.twitter_api.repositories.UserRepository;
@@ -31,7 +32,7 @@ public class TweetServiceImpl implements TweetService {
     private final UserRepository userRepository;
     private final TweetMapper tweetMapper;
     private final TweetRepository tweetRepository;
-
+    private final UserMapper userMapper;
     private final HashtagRepository hashtagRepository;
 
     /**
@@ -118,9 +119,24 @@ public class TweetServiceImpl implements TweetService {
     }
 
     @Override
-    public ResponseEntity<TweetResponseDto> getMentions(Long id) {
-        // TODO Auto-generated method stub
-        return null;
+    public List<UserResponseDto> getMentions(Long id) {
+        Optional<Tweet> optionalTweet = tweetRepository.findByIdAndDeletedFalse(id);
+        if (optionalTweet.isEmpty()) {
+            throw new NotFoundException("tweet not found with id: " + id);
+        }
+        List<User> mentionsUserList = new ArrayList<>(optionalTweet.get().getMentionsUserlist());
+
+        ArrayList<User> del = new ArrayList<>();
+        for (User u : mentionsUserList) {
+            if (u.isDeleted()) {
+                del.add(u);
+            }
+        }
+        for (User u : del) {
+            mentionsUserList.remove(u);
+        }
+
+        return userMapper.entitiesToDtos(mentionsUserList);
     }
 
 

@@ -25,7 +25,7 @@ public interface TweetService {
 	  ResponseEntity<TweetResponseDto> getReposts(Long id);
 	  
 	  
-	  ResponseEntity<TweetResponseDto> getMentions(Long id);
+	  List<UserResponseDto> getMentions(Long id);
 	  
 
 	  ////////////////////////////////////////////////////////////////////////////////////////////////

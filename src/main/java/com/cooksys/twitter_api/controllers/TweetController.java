@@ -41,7 +41,8 @@ public class TweetController {
 
 
 	    @GetMapping("/{id}/mentions")
-	    public void getMentions() {
+	    public List<UserResponseDto> getMentions(@PathVariable Long id) {
+			return tweetService.getMentions(id);
 	    }
 
 	    public static class ProfileResponseDto {
