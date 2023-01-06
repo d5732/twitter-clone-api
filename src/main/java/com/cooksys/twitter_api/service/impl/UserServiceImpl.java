@@ -7,6 +7,7 @@ import com.cooksys.twitter_api.entities.Tweet;
 import com.cooksys.twitter_api.entities.User;
 import com.cooksys.twitter_api.exceptions.BadRequestException;
 import com.cooksys.twitter_api.exceptions.NotFoundException;
+import com.cooksys.twitter_api.helpers.SortByPostedReverse;
 import com.cooksys.twitter_api.mappers.CredentialsMapper;
 import com.cooksys.twitter_api.mappers.ProfileMapper;
 import com.cooksys.twitter_api.mappers.UserMapper;
@@ -17,9 +18,10 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+
+import static com.cooksys.twitter_api.helpers.Helpers.*;
 
 @Service
 @RequiredArgsConstructor
@@ -31,32 +33,6 @@ public class UserServiceImpl implements UserService {
     private final ProfileMapper profileMapper;
     private final CredentialsMapper credentialsMapper;
 
-    private static class SortByPostedReverse implements Comparator<Tweet> {
-        public int compare(Tweet a, Tweet b) {
-            return (int) (b.getPosted().getTime() - a.getPosted().getTime());
-        }
-    }
-
-    boolean credentialsAreCorrect(Optional<User> optionalUser, CredentialsDto credentialsDto) {
-        return optionalUser.isPresent()
-                && isValid(credentialsDto)
-                && optionalUser.get().getCredentials().getUsername().equals(credentialsDto.getUsername())
-                && optionalUser.get().getCredentials().getPassword().equals(credentialsDto.getPassword());
-    }
-
-    private boolean isValid(ProfileDto profileDto) {
-        return profileDto != null
-                && profileDto.getEmail() != null
-                && !profileDto.getEmail().isEmpty();
-    }
-
-    private boolean isValid(CredentialsDto credentialsDto) {
-        return credentialsDto != null
-                && credentialsDto.getUsername() != null
-                && credentialsDto.getPassword() != null
-                && !credentialsDto.getUsername().isEmpty()
-                && !credentialsDto.getPassword().isEmpty();
-    }
 
     /**
      * GET users/@{username}
@@ -249,10 +225,10 @@ public class UserServiceImpl implements UserService {
         for (Tweet tweet : deleted) {
             optionalUser.get().getTweets().remove(tweet);
         }
-        //TODO: Check sort order
+        // TODO: Check sort order
         optionalUser.get().getMentionsTweetList().sort(new SortByPostedReverse());
-//        return tweetMapper.entitiesToDtos(optionalUser.get().getTweets());
-//    todo: fix or replace entitiesToDtos with for loop
+        // return tweetMapper.entitiesToDtos(optionalUser.get().getTweets());
+        // todo: fix or replace entitiesToDtos with for loop
         return null;
     }
 
@@ -365,7 +341,7 @@ public class UserServiceImpl implements UserService {
     public UserResponseDto createUser(UserRequestDto userRequestDto) {
         CredentialsDto credentialsDto = userRequestDto.getCredentials();
         ProfileDto profileDto = userRequestDto.getProfile();
-        if (!isValid(credentialsDto) || !isValid(profileDto)) {
+        if (!isValidCredentialsDto(credentialsDto) || !isValidProfileDto(profileDto)) {
             throw new BadRequestException("Required field(s) missing");
         }
         Optional<User> optionalUser = userRepository.findByCredentialsUsername(credentialsDto.getUsername());
