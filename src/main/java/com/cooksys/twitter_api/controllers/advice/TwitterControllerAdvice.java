@@ -1,6 +1,8 @@
 package com.cooksys.twitter_api.controllers.advice;
 
-import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
+//import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
+
+import com.cooksys.twitter_api.exceptions.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
