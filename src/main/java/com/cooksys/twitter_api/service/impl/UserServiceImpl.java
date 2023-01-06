@@ -10,6 +10,7 @@ import com.cooksys.twitter_api.exceptions.NotFoundException;
 import com.cooksys.twitter_api.helpers.SortByPostedReverse;
 import com.cooksys.twitter_api.mappers.CredentialsMapper;
 import com.cooksys.twitter_api.mappers.ProfileMapper;
+import com.cooksys.twitter_api.mappers.TweetMapper;
 import com.cooksys.twitter_api.mappers.UserMapper;
 import com.cooksys.twitter_api.repositories.UserRepository;
 import com.cooksys.twitter_api.service.UserService;
@@ -29,7 +30,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
-    //    private final TweetMapper tweetMapper; //todo: fix;
+    private final TweetMapper tweetMapper;
     private final ProfileMapper profileMapper;
     private final CredentialsMapper credentialsMapper;
 
@@ -191,16 +192,12 @@ public class UserServiceImpl implements UserService {
         }
         List<User> users = userRepository.findAllByDeletedFalseAndIdIn(idsList);
         users.add(optionalUser.get());
-
-
         for (User user : users) {
             feed.addAll(user.getTweets());
         }
         //TODO: Check sort order
         feed.sort(new SortByPostedReverse());
-//        return tweetMapper.entitiesToDtos(feed);
-        //todo: fix;
-        return null;
+        return tweetMapper.entitiesToDtos(feed);
     }
 
     /**
@@ -227,9 +224,8 @@ public class UserServiceImpl implements UserService {
         }
         // TODO: Check sort order
         optionalUser.get().getMentionsTweetList().sort(new SortByPostedReverse());
-        // return tweetMapper.entitiesToDtos(optionalUser.get().getTweets());
-        // todo: fix or replace entitiesToDtos with for loop
-        return null;
+        // TODO: UNIMPORTANT (if this works fine) fix or replace entitiesToDtos with for loop
+        return tweetMapper.entitiesToDtos(optionalUser.get().getTweets());
     }
 
 
@@ -259,9 +255,7 @@ public class UserServiceImpl implements UserService {
         }
         //TODO: Check sort order
         optionalUser.get().getMentionsTweetList().sort(new SortByPostedReverse());
-        return null;
-        // TODO: fix
-//        return tweetMapper.entitiesToDtos(optionalUser.get().getMentionsTweetList());
+        return tweetMapper.entitiesToDtos(optionalUser.get().getMentionsTweetList());
     }
 
 
@@ -337,6 +331,7 @@ public class UserServiceImpl implements UserService {
      * one.
      * #43
      */
+
     @Override
     public UserResponseDto createUser(UserRequestDto userRequestDto) {
         CredentialsDto credentialsDto = userRequestDto.getCredentials();
@@ -352,11 +347,13 @@ public class UserServiceImpl implements UserService {
             if (!optionalUser.get().isDeleted()) {
                 throw new BadRequestException("Username taken");
             }
+            optionalUser.get().setDeleted(false);
             return userMapper.entityToDto(userRepository.saveAndFlush(optionalUser.get()));
         }
         Credentials credentials = credentialsMapper.dtoToEntity(credentialsDto);
         Profile profile = profileMapper.dtoToEntity(profileDto);
-        // TODO: is there a Spring-like/mapper way to do this without new'ing? Embeddeds complicate this
+        // TODO: UNIMPORTANT: is there a Spring-like/mapper way to do this without new'ing? Embeddeds complicate this?
+        //  Or is it as easy as dtoToEntity?
         User user = new User();
         user.setCredentials(credentials);
         user.setProfile(profile);

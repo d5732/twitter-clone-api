@@ -58,7 +58,6 @@ public class Helpers {
             mentions.add(content.substring(matcher.start()+1, matcher.end()));
         }
         System.out.println("~~~~~~~~~~~~~~~~~~~~ parseAndSaveMentions created mentions string set: " + mentions);
-        //todo missing 1 side of the set relationship for entity
         if (mentions.size() > 0) {
             HashSet<User> usersToSave = new HashSet<>();
             for (String mention : mentions) {
