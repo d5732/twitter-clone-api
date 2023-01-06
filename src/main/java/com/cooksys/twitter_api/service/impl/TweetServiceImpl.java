@@ -6,6 +6,7 @@ import com.cooksys.twitter_api.entities.User;
 import com.cooksys.twitter_api.exceptions.BadRequestException;
 import com.cooksys.twitter_api.exceptions.NotFoundException;
 import com.cooksys.twitter_api.mappers.TweetMapper;
+import com.cooksys.twitter_api.mappers.UserMapper;
 import com.cooksys.twitter_api.repositories.HashtagRepository;
 import com.cooksys.twitter_api.repositories.TweetRepository;
 import com.cooksys.twitter_api.repositories.UserRepository;
@@ -31,7 +32,7 @@ public class TweetServiceImpl implements TweetService {
     private final UserRepository userRepository;
     private final TweetMapper tweetMapper;
     private final TweetRepository tweetRepository;
-
+    private final UserMapper userMapper;
     private final HashtagRepository hashtagRepository;
 
     /**
@@ -78,12 +79,10 @@ public class TweetServiceImpl implements TweetService {
         //     * mentions and #{hashtag} tags. There is no way to create hashtags or create mentions from the API, so this must be
         //     * handled automatically!
 
-
         Tweet tweet = tweetMapper.dtoToEntity(tweetRequestDto);
         tweet.setAuthor(optionalAuthor.get());
         tweet.setPosted(new Timestamp(System.currentTimeMillis()));
         Tweet savedTweet = tweetRepository.saveAndFlush(tweet);
-        System.out.println(savedTweet);
         parseAndSaveMentions(savedTweet, tweetRepository, userRepository); // inject dependencies
         parseAndSaveHashtags(savedTweet, tweetRepository, hashtagRepository); // inject dependencies
         return tweetMapper.entityToDto(savedTweet);
@@ -194,15 +193,46 @@ public class TweetServiceImpl implements TweetService {
 
 
     @Override
-    public ResponseEntity<TweetResponseDto> getReposts(Long id) {
-        // TODO Auto-generated method stub
-        return null;
+    public List<TweetResponseDto> getReposts(Long id) {
+
+        //todo: untested method, waiting for post retweet
+        Optional<Tweet> optionalTweet = tweetRepository.findByIdAndDeletedFalse(id);
+        if (optionalTweet.isEmpty()) {
+            throw new NotFoundException("Tweet not found with id: " + id);
+        }
+        List<Tweet> allTweets = tweetRepository.findAllByDeletedFalse();
+
+
+
+        ArrayList<Tweet> reposts = new ArrayList<>();
+        for (Tweet tweet : allTweets) {
+            if (tweet.getRepostOf().equals(optionalTweet.get())) {
+                reposts.add(tweet);
+            }
+        }
+        reposts.sort(new SortByPostedReverse());
+        return tweetMapper.entitiesToDtos(reposts);
     }
 
     @Override
-    public ResponseEntity<TweetResponseDto> getMentions(Long id) {
-        // TODO Auto-generated method stub
-        return null;
+    public List<UserResponseDto> getMentions(Long id) {
+        Optional<Tweet> optionalTweet = tweetRepository.findByIdAndDeletedFalse(id);
+        if (optionalTweet.isEmpty()) {
+            throw new NotFoundException("Tweet not found with id: " + id);
+        }
+        List<User> mentionsUserList = new ArrayList<>(optionalTweet.get().getMentionsUserlist());
+
+        ArrayList<User> del = new ArrayList<>();
+        for (User u : mentionsUserList) {
+            if (u.isDeleted()) {
+                del.add(u);
+            }
+        }
+        for (User u : del) {
+            mentionsUserList.remove(u);
+        }
+
+        return userMapper.entitiesToDtos(mentionsUserList);
     }
 
 
@@ -323,6 +353,9 @@ public class TweetServiceImpl implements TweetService {
 
                 after.add(t.getInReplyTo());    // prepare after
 
+                //TODO: warning about NullPointerException related to this conditional + replies.add(); secquence
+
+
             } else {
 
                 before.add(t);                // prepare before
@@ -359,6 +392,8 @@ public class TweetServiceImpl implements TweetService {
         List<TweetResponseDto> replies = null;
 
         if (!(targetTweet.getInReplyTo().getContent().isEmpty() && targetTweet.getInReplyTo() == null)) {
+
+            //TODO: warning about NullPointerException related to this conditional + replies.add(); secquence
 
             replies.add(targetTweet.getInReplyTo());
 
