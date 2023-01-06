@@ -50,25 +50,21 @@ public class Helpers {
 
 
     public static void parseAndSaveMentions(Tweet tweet, TweetRepository tweetRepository, UserRepository userRepository) {
-        // repositories injected to update DB user_table table and the join table for user_mentions
+        //  repositories injected to update DB user_table table and the join table for user_mentions
         String content = tweet.getContent();
         Matcher matcher = mentionPattern.matcher(content);
         HashSet<String> mentions = new HashSet<>();
         while (matcher.find()) {
-            mentions.add(content.substring(matcher.start(), matcher.end()));
+            mentions.add(content.substring(matcher.start()+1, matcher.end()));
         }
         System.out.println("~~~~~~~~~~~~~~~~~~~~ parseAndSaveMentions created mentions string set: " + mentions);
-        System.out.println(tweet);
         //todo missing 1 side of the set relationship for entity
         if (mentions.size() > 0) {
             HashSet<User> usersToSave = new HashSet<>();
             for (String mention : mentions) {
                 Optional<User> optionalMentioned = userRepository.findByCredentialsUsernameAndDeletedFalse(mention);
-                if (optionalMentioned.isPresent()) {
-                    optionalMentioned.get().getMentionsTweetList().add(tweet);
-                }
+                optionalMentioned.ifPresent(user -> user.getMentionsTweetList().add(tweet));
             }
-            System.out.println(usersToSave);
             tweet.setMentionsUserlist(new ArrayList<>(usersToSave));
             tweetRepository.saveAndFlush(tweet);
             userRepository.saveAllAndFlush(usersToSave);
@@ -81,7 +77,7 @@ public class Helpers {
         Matcher matcher = hashtagPattern.matcher(content);
         HashSet<String> labels = new HashSet<>();
         while (matcher.find()) {
-            labels.add(content.substring(matcher.start(), matcher.end()));
+            labels.add(content.substring(matcher.start()+1, matcher.end()));
         }
         System.out.println("~~~~~~~~~~~~~~~~~~~~ parseAndSaveHashtags created labels string set: " + labels);
         if (labels.size() > 0) {
@@ -89,7 +85,7 @@ public class Helpers {
             for (String label : labels) {
                 Hashtag hashtag;
                 Optional<Hashtag> optionalHashtag = hashtagRepository.findByLabelAndDeletedFalse(label);
-                if (optionalHashtag.isPresent()){
+                if (optionalHashtag.isPresent()) {
                     // active Hashtag
                     hashtag = optionalHashtag.get();
                     // mutate tweetList
@@ -108,27 +104,11 @@ public class Helpers {
                 hashtagsToSave.add(hashtag);
             }
 
-            System.out.println(hashtagsToSave);
-            System.out.println(tweet);
             List<Hashtag> savedHashtagsList = hashtagRepository.saveAllAndFlush(hashtagsToSave);
             tweet.setHashtagList(savedHashtagsList);
             tweet.setHashtagList(new ArrayList<>(hashtagsToSave));
             tweetRepository.saveAndFlush(tweet);
         }
     }
-
-//    public class RegexExample8 {
-//
-////        boolean found = false;
-//        while(matcher.find())
-//
-//        {
-////            found = true;
-//        }
-////        if(!found){
-////            System.out.println("No match found.");
-////        }
-//    }
-//}
 
 }

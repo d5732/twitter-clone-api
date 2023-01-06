@@ -77,12 +77,10 @@ public class TweetServiceImpl implements TweetService {
         //     * mentions and #{hashtag} tags. There is no way to create hashtags or create mentions from the API, so this must be
         //     * handled automatically!
 
-
         Tweet tweet = tweetMapper.dtoToEntity(tweetRequestDto);
         tweet.setAuthor(optionalAuthor.get());
         tweet.setPosted(new Timestamp(System.currentTimeMillis()));
         Tweet savedTweet = tweetRepository.saveAndFlush(tweet);
-        System.out.println(savedTweet);
         parseAndSaveMentions(savedTweet, tweetRepository, userRepository); // inject dependencies
         parseAndSaveHashtags(savedTweet, tweetRepository, hashtagRepository); // inject dependencies
         return tweetMapper.entityToDto(savedTweet);
@@ -246,6 +244,9 @@ public class TweetServiceImpl implements TweetService {
 
                 after.add(t.getInReplyTo());    // prepare after
 
+                //TODO: warning about NullPointerException related to this conditional + replies.add(); secquence
+
+
             } else {
 
                 before.add(t);                // prepare before
@@ -290,6 +291,8 @@ public class TweetServiceImpl implements TweetService {
         List<TweetResponseDto> replies = null;
 
         if (!(targetTweet.getInReplyTo().getContent().isEmpty() && targetTweet.getInReplyTo() == null)) {
+
+            //TODO: warning about NullPointerException related to this conditional + replies.add(); secquence
 
             replies.add(targetTweet.getInReplyTo());
 
