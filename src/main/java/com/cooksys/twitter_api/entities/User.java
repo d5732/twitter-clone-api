@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 @Entity
@@ -23,6 +24,8 @@ public class User {
 	private Profile profile;
 
 	private boolean deleted;
+
+	private Timestamp joined;
 
 	@OneToMany
 	private List<Tweet> tweets;
