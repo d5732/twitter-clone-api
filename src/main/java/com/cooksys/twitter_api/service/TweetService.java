@@ -18,7 +18,7 @@ import com.cooksys.twitter_api.dtos.UserRequestDto;
 public interface TweetService {
 	
 		  
-	  ResponseEntity<TweetResponseDto> postTweets(@PathVariable TweetResponseDto tweetResponseDto);
+	  TweetResponseDto createTweet(@PathVariable TweetResponseDto tweetResponseDto);
 
 	  
 	  ResponseEntity<TweetRequestDto> createTweetReply(@PathVariable TweetRequestDto tweetRequestDto);
