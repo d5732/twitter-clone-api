@@ -1,15 +1,18 @@
 package com.cooksys.twitter_api.helpers;
 
-import java.util.HashSet;
+import java.sql.Timestamp;
+import java.util.*;
 import java.util.regex.*;
 
 import com.cooksys.twitter_api.dtos.CredentialsDto;
 import com.cooksys.twitter_api.dtos.ProfileDto;
 import com.cooksys.twitter_api.dtos.TweetRequestDto;
+import com.cooksys.twitter_api.entities.Hashtag;
+import com.cooksys.twitter_api.entities.Tweet;
 import com.cooksys.twitter_api.entities.User;
-
-import java.util.Optional;
-import java.util.Set;
+import com.cooksys.twitter_api.repositories.HashtagRepository;
+import com.cooksys.twitter_api.repositories.TweetRepository;
+import com.cooksys.twitter_api.repositories.UserRepository;
 
 public class Helpers {
 
@@ -46,33 +49,72 @@ public class Helpers {
     private static final Pattern hashtagPattern = Pattern.compile("#[a-zA-Z0-9]+");
 
 
-    //parseMentions: Guard null pointer by validating the DTO before invoking this method
-    public static Set<String> parseAndSaveMentions(TweetRequestDto tweetRequestDto) {
-        String content = tweetRequestDto.getContent();
+    public static void parseAndSaveMentions(Tweet tweet, TweetRepository tweetRepository, UserRepository userRepository) {
+        // repositories injected to update DB user_table table and the join table for user_mentions
+        String content = tweet.getContent();
         Matcher matcher = mentionPattern.matcher(content);
-        HashSet<String> result = new HashSet<>();
+        HashSet<String> mentions = new HashSet<>();
         while (matcher.find()) {
-            result.add(content.substring(matcher.start(), matcher.end()));
+            mentions.add(content.substring(matcher.start(), matcher.end()));
         }
-        System.out.println("~~~~~~~~~~~~~~~~~~~~ parseAndSaveMentions created substring set: " + result);
-
-        //todo: implement save to database
-        return result;
+        System.out.println("~~~~~~~~~~~~~~~~~~~~ parseAndSaveMentions created mentions string set: " + mentions);
+        System.out.println(tweet);
+        //todo missing 1 side of the set relationship for entity
+        if (mentions.size() > 0) {
+            HashSet<User> usersToSave = new HashSet<>();
+            for (String mention : mentions) {
+                Optional<User> optionalMentioned = userRepository.findByCredentialsUsernameAndDeletedFalse(mention);
+                if (optionalMentioned.isPresent()) {
+                    optionalMentioned.get().getMentionsTweetList().add(tweet);
+                }
+            }
+            System.out.println(usersToSave);
+            tweet.setMentionsUserlist(new ArrayList<>(usersToSave));
+            tweetRepository.saveAndFlush(tweet);
+            userRepository.saveAllAndFlush(usersToSave);
+        }
     }
 
-    //parseMentions: Guard null pointer by validating the DTO before invoking this method
-    public static Set<String> parseAndSaveHashtags(TweetRequestDto tweetRequestDto) {
-        String content = tweetRequestDto.getContent();
+    public static void parseAndSaveHashtags(Tweet tweet, TweetRepository tweetRepository, HashtagRepository hashtagRepository) {
+        // repositories injected to update DB tweet table, hashtag table, and the join table for tweet_hashtags
+        String content = tweet.getContent();
         Matcher matcher = hashtagPattern.matcher(content);
-        HashSet<String> result = new HashSet<>();
+        HashSet<String> labels = new HashSet<>();
         while (matcher.find()) {
-            result.add(content.substring(matcher.start(), matcher.end()));
+            labels.add(content.substring(matcher.start(), matcher.end()));
         }
-        System.out.println("~~~~~~~~~~~~~~~~~~~~ parseAndSaveHashtags created substring set: " + result);
+        System.out.println("~~~~~~~~~~~~~~~~~~~~ parseAndSaveHashtags created labels string set: " + labels);
+        if (labels.size() > 0) {
+            HashSet<Hashtag> hashtagsToSave = new HashSet<>();
+            for (String label : labels) {
+                Hashtag hashtag;
+                Optional<Hashtag> optionalHashtag = hashtagRepository.findByLabelAndDeletedFalse(label);
+                if (optionalHashtag.isPresent()){
+                    // active Hashtag
+                    hashtag = optionalHashtag.get();
+                    // mutate tweetList
+                    hashtag.getTweetList().add(tweet);
+                } else {
+                    // new Hashtag
+                    hashtag = new Hashtag();
+                    hashtag.setLabel(label);
+                    hashtag.setFirstUsed(new Timestamp(System.currentTimeMillis()));
+                    // init tweetList with current tweet
+                    ArrayList<Tweet> newTweetList = new ArrayList<>();
+                    newTweetList.add(tweet);
+                    hashtag.setTweetList(newTweetList);
+                }
+                hashtag.setLastUsed(new Timestamp(System.currentTimeMillis()));
+                hashtagsToSave.add(hashtag);
+            }
 
-
-        //todo: implement save to database
-        return result;
+            System.out.println(hashtagsToSave);
+            System.out.println(tweet);
+            List<Hashtag> savedHashtagsList = hashtagRepository.saveAllAndFlush(hashtagsToSave);
+            tweet.setHashtagList(savedHashtagsList);
+            tweet.setHashtagList(new ArrayList<>(hashtagsToSave));
+            tweetRepository.saveAndFlush(tweet);
+        }
     }
 
 //    public class RegexExample8 {

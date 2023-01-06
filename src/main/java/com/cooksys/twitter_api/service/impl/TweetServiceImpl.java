@@ -6,6 +6,7 @@ import com.cooksys.twitter_api.entities.User;
 import com.cooksys.twitter_api.exceptions.BadRequestException;
 import com.cooksys.twitter_api.exceptions.NotFoundException;
 import com.cooksys.twitter_api.mappers.TweetMapper;
+import com.cooksys.twitter_api.repositories.HashtagRepository;
 import com.cooksys.twitter_api.repositories.TweetRepository;
 import com.cooksys.twitter_api.repositories.UserRepository;
 import com.cooksys.twitter_api.service.TweetService;
@@ -17,9 +18,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static com.cooksys.twitter_api.helpers.Helpers.*;
 
@@ -33,6 +32,7 @@ public class TweetServiceImpl implements TweetService {
     private final TweetMapper tweetMapper;
     private final TweetRepository tweetRepository;
 
+    private final HashtagRepository hashtagRepository;
 
     /**
      * Creates a new simple tweet, with the author set to the user identified by the credentials in the request body.
@@ -76,12 +76,16 @@ public class TweetServiceImpl implements TweetService {
         //     * IMPORTANT: when a tweet with content is created, the server must process the tweet's content for @{username}
         //     * mentions and #{hashtag} tags. There is no way to create hashtags or create mentions from the API, so this must be
         //     * handled automatically!
-        parseAndSaveMentions(tweetRequestDto);
-        parseAndSaveHashtags(tweetRequestDto);
+
+
         Tweet tweet = tweetMapper.dtoToEntity(tweetRequestDto);
         tweet.setAuthor(optionalAuthor.get());
         tweet.setPosted(new Timestamp(System.currentTimeMillis()));
-        return tweetMapper.entityToDto(tweetRepository.saveAndFlush(tweet));
+        Tweet savedTweet = tweetRepository.saveAndFlush(tweet);
+        System.out.println(savedTweet);
+        parseAndSaveMentions(savedTweet, tweetRepository, userRepository); // inject dependencies
+        parseAndSaveHashtags(savedTweet, tweetRepository, hashtagRepository); // inject dependencies
+        return tweetMapper.entityToDto(savedTweet);
     }
 
     @Override
@@ -132,7 +136,6 @@ public class TweetServiceImpl implements TweetService {
 
         tweetList.sort(new SortByPostedReverse());
         return tweetMapper.entitiesToDtos(tweetList);
-
 
     }
 
