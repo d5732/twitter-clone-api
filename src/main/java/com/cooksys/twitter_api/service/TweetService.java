@@ -8,34 +8,43 @@ import java.util.List;
 
 public interface TweetService {
 
-    TweetResponseDto createTweet(TweetRequestDto tweetRequestDto);
+    // To do
+	  
+	  ResponseEntity<TweetRequestDto> createTweetReply(@PathVariable TweetRequestDto tweetRequestDto);
 
-    ResponseEntity<TweetRequestDto> createTweetReply(TweetRequestDto tweetRequestDto);
+	  
+	  ResponseEntity<TweetResponseDto> getTags(Long id);
+	  
+	  ResponseEntity<TweetResponseDto> getReposts(Long id);
+	  
+	  
+	  ResponseEntity<TweetResponseDto> getMentions(Long id);
+	  
 
-    ResponseEntity<TweetRequestDto> replyToTweet(Long ID, TweetRequestDto tweetRequestDto);
+	  ////////////////////////////////////////////////////////////////////////////////////////////////
+	  
+	  
+	  // Active
+		   
+	  TweetResponseDto replyToTweet(Long id, TweetRequestDto tweetRequestDto);
 
-    ResponseEntity<TweetRequestDto> repostTweet(Long ID, TweetRequestDto tweetRequestDto);
 
-    ResponseEntity<TweetResponseDto> getTags(Long id);
+	  TweetResponseDto createTweet(TweetRequestDto tweetRequestDto);
 
-    List<TweetResponseDto> getReposts(Long id);
+	  TweetResponseDto repostTweet(Long ID, TweetRequestDto tweetRequestDto);
+	  
+	  void likeTweet(Long id, UserRequestDto userRequestDto);
+	  
+	  List<TweetResponseDto> getTweets();
+		  
+	  TweetResponseDto deleteTweet(Long id, TweetRequestDto tweetRequestDto);	
 
-    List<UserResponseDto> getMentions(Long id);
+	  List<UserResponseDto> getLikes(Long id);
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-
-    void likeTweet(Long id, UserRequestDto userRequestDto);
-
-    List<TweetResponseDto> getTweets();
-
-    TweetResponseDto deleteTweet(Long id, TweetRequestDto tweetRequestDto);
-
-    List<UserResponseDto> getLikes(Long id);
-
-    TweetResponseDto getTweet(Long id);
-
-    ContextDto getContext(Long id);
-
-    List<TweetResponseDto> getReplies(Long id);
+	  TweetResponseDto getTweet(Long id);
+	  
+	  ContextDto getContext(Long id);
+	  
+	  List<TweetResponseDto> getReplies(Long id);
 
 }

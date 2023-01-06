@@ -128,32 +128,9 @@ public class TweetServiceImpl implements TweetService {
 
     @Override
     public TweetResponseDto repostTweet(Long id, TweetRequestDto tweetRequestDto) {
-		
-    	
-    	// tweetRequestDto - has credentials 
-    	
-    	//Creates a repost of the tweet with the given id. The author of the repost should match the credentials 
-    	// provided in the request body. If the given tweet is deleted or otherwise doesn't exist, or 
-    	// the given credentials do not match an active user in the database, an error should be sent in lieu of a response.
-
-    	//Because this creates a repost tweet, content is not allowed. 
-    	// Additionally, notice that the 
-    	//repostOf property is not provided by the request. The server must create that relationship.
-
-    	//The response should contain the newly-created tweet.
-    	
-    	
-    	// 1. get tweet by id
-    	// 2. check if tweet is null -> throw bad request
-    	// 3. check if credentials is active -> use helper method
-    	// 4. create a new tweet 
-    	// 5. set isRepost(tweetWithId) Entity relationship
-    	// 6. saveandflush
-    	// 7. return
+	
     	
     	Optional<Tweet> tweetToBeReposted = tweetRepository.findByIdAndDeletedFalse(id);		
-
-    	// add null check for tweetRequestDto
     	
     	if(tweetRequestDto == null) {
     		
@@ -427,11 +404,7 @@ public class TweetServiceImpl implements TweetService {
         }
         
 
-        // get active user from db
-
         Optional<User> toLike = userRepository.findByCredentialsUsernameAndDeletedFalse(userRequestDto.getCredentials().getUsername());
-
-        // setLike
 
         List<User> usersLikeTweetList = toBeLiked.get().getLikesUserList();
 
