@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -57,8 +58,6 @@ public class TweetServiceImpl implements TweetService {
     @Override
     public TweetResponseDto createTweet(TweetRequestDto tweetRequestDto) {
         CredentialsDto credentialsDto = tweetRequestDto.getCredentials();
-        System.out.println("hello");
-
         // 1. If the given credentials do not match an active user in the database, an error should be sent
         // 2. It must have a content property
         // Both are handled in the helper.
@@ -79,8 +78,10 @@ public class TweetServiceImpl implements TweetService {
         //     * handled automatically!
         parseAndSaveMentions(tweetRequestDto);
         parseAndSaveHashtags(tweetRequestDto);
-        System.out.println("salutations");
-        return tweetMapper.entityToDto(tweetRepository.saveAndFlush(tweetMapper.dtoToEntity(tweetRequestDto)));
+        Tweet tweet = tweetMapper.dtoToEntity(tweetRequestDto);
+        tweet.setAuthor(optionalAuthor.get());
+        tweet.setPosted(new Timestamp(System.currentTimeMillis()));
+        return tweetMapper.entityToDto(tweetRepository.saveAndFlush(tweet));
     }
 
     @Override

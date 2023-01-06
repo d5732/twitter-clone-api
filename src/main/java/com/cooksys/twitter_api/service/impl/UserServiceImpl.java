@@ -225,10 +225,10 @@ public class UserServiceImpl implements UserService {
         for (Tweet tweet : deleted) {
             optionalUser.get().getTweets().remove(tweet);
         }
-        //TODO: Check sort order
+        // TODO: Check sort order
         optionalUser.get().getMentionsTweetList().sort(new SortByPostedReverse());
-//        return tweetMapper.entitiesToDtos(optionalUser.get().getTweets());
-//    todo: fix or replace entitiesToDtos with for loop
+        // return tweetMapper.entitiesToDtos(optionalUser.get().getTweets());
+        // todo: fix or replace entitiesToDtos with for loop
         return null;
     }
 
