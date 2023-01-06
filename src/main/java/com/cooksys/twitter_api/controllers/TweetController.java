@@ -1,19 +1,11 @@
 package com.cooksys.twitter_api.controllers;
 
-import com.cooksys.twitter_api.dtos.ContextDto;
-import com.cooksys.twitter_api.dtos.TweetRequestDto;
-import com.cooksys.twitter_api.dtos.TweetResponseDto;
-import com.cooksys.twitter_api.dtos.UserResponseDto;
-import com.cooksys.twitter_api.entities.User;
+import com.cooksys.twitter_api.dtos.*;
 import com.cooksys.twitter_api.service.TweetService;
-import com.cooksys.twitter_api.dtos.UserRequestDto;
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -24,7 +16,8 @@ public class TweetController {
 
 	   
 	    @PostMapping
-	    public void postTweets() {
+	    public TweetResponseDto createTweet(@RequestBody TweetRequestDto tweetRequestDto) {
+			return tweetService.createTweet(tweetRequestDto);
 	    }
 
 
