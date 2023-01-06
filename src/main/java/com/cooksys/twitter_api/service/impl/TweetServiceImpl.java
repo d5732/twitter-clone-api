@@ -32,7 +32,7 @@ public class TweetServiceImpl implements TweetService {
 
 
     @Override
-    public TweetResponseDto createTweet(TweetResponseDto tweetResponseDto) {
+    public TweetResponseDto createTweet(TweetRequestDto tweetRequestDto) {
         // TODO Auto-generated method stub
         return null;
     }
