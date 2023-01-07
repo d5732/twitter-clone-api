@@ -268,15 +268,19 @@ public class TweetServiceImpl implements TweetService {
         }
 
         ArrayList<User> usersToReturn = new ArrayList<>();
-
+        
+        
+       
+        /*
         for (User u : userRepository.findAllByDeletedFalse()) {    // for all active users
 
             if (u.getLikesTweetList().contains(optionalTweet)) {            // u liked OptionalTweet
                 usersToReturn.add(u);
             }
         }
+        */
 
-        return tweetMapper.entitiesToUserDtos(usersToReturn);
+        return tweetMapper.entitiesToUserDtos(optionalTweet.get().getLikesUserList());
 
 
     }
@@ -393,11 +397,11 @@ public class TweetServiceImpl implements TweetService {
     @Override
     public void likeTweet(Long id, CredentialsDto credentialsDto) {
 
-    	
-    	if (!userRepository.findByCredentialsUsernameAndDeletedFalse(credentialsDto.getUsername()).isPresent()) {
+        Optional<User> liker = userRepository.findByCredentialsUsernameAndDeletedFalse(credentialsDto.getUsername());
 
+        if(liker.isEmpty() || !credentialsAreCorrect(liker, credentialsDto)) {
 
-            throw new NotFoundException("Bad credentials with id: " + credentialsDto.getUsername());
+            throw new BadRequestException("Bad request");
         }
     	
     	
@@ -411,13 +415,25 @@ public class TweetServiceImpl implements TweetService {
         }
         
 
-        Optional<User> toLike = userRepository.findByCredentialsUsernameAndDeletedFalse(credentialsDto.getUsername());
+        if(!toBeLiked.get().getLikesUserList().contains(liker.get())) {
+        	
+            toBeLiked.get().getLikesUserList().add(liker.get());
+            tweetRepository.saveAndFlush(toBeLiked.get());
 
-        List<User> usersLikeTweetList = toBeLiked.get().getLikesUserList();
+        	
+        }
 
-        usersLikeTweetList.add(toLike.get());
+        
+        if(!liker.get().getLikesTweetList().contains(toBeLiked.get())) {
+        	
+            liker.get().getLikesTweetList().add(toBeLiked.get());
+            
+            userRepository.saveAndFlush(liker.get());
 
-        toBeLiked.get().setLikesUserList(usersLikeTweetList);
+
+        }
+
+                
 
 
     }
