@@ -140,6 +140,11 @@ public class TweetServiceImpl implements TweetService {
 
     	CredentialsDto credentialsDto = tweetRequestDto.getCredentials();
     	
+    	if(credentialsDto == null) {
+    		
+    		throw new BadRequestException("Bad Credentials DTO");
+    	}
+    	
     	
         Optional<User> tweetAuthor = userRepository.findByCredentialsUsernameAndDeletedFalse(credentialsDto.getUsername());
 
@@ -370,7 +375,7 @@ public class TweetServiceImpl implements TweetService {
 
         List<TweetResponseDto> replies = null;
 
-        if (!(targetTweet.getInReplyTo().getContent().isEmpty() && targetTweet.getInReplyTo() == null)) {
+        if ((targetTweet.getInReplyTo() != null && !targetTweet.getInReplyTo().getContent().isEmpty())) {
 
             //TODO: warning about NullPointerException related to this conditional + replies.add(); secquence
 
@@ -386,13 +391,13 @@ public class TweetServiceImpl implements TweetService {
     }
 
     @Override
-    public void likeTweet(Long id, UserRequestDto userRequestDto) {
+    public void likeTweet(Long id, CredentialsDto credentialsDto) {
 
     	
-    	if (!userRepository.findByCredentialsUsernameAndDeletedFalse(userRequestDto.getCredentials().getUsername()).isPresent()) {
+    	if (!userRepository.findByCredentialsUsernameAndDeletedFalse(credentialsDto.getUsername()).isPresent()) {
 
 
-            throw new NotFoundException("Bad credentials with id: " + userRequestDto.getCredentials().getUsername());
+            throw new NotFoundException("Bad credentials with id: " + credentialsDto.getUsername());
         }
     	
     	
@@ -406,7 +411,7 @@ public class TweetServiceImpl implements TweetService {
         }
         
 
-        Optional<User> toLike = userRepository.findByCredentialsUsernameAndDeletedFalse(userRequestDto.getCredentials().getUsername());
+        Optional<User> toLike = userRepository.findByCredentialsUsernameAndDeletedFalse(credentialsDto.getUsername());
 
         List<User> usersLikeTweetList = toBeLiked.get().getLikesUserList();
 

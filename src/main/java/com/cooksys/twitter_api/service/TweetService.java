@@ -33,7 +33,7 @@ public interface TweetService {
 
 	  TweetResponseDto repostTweet(Long ID, TweetRequestDto tweetRequestDto);
 	  
-	  void likeTweet(Long id, UserRequestDto userRequestDto);
+	  void likeTweet(Long id, CredentialsDto credentialsDto);
 	  
 	  List<TweetResponseDto> getTweets();
 		  
