@@ -96,10 +96,6 @@ public class TweetServiceImpl implements TweetService {
     }
 
 
-
-
-
-
     /*
      *
      *
@@ -148,48 +144,29 @@ public class TweetServiceImpl implements TweetService {
         tweet.setAuthor(optionalUser.get());
         parseAndSaveHashtags(tweet, tweetRepository, hashtagRepository);
         parseAndSaveMentions(tweet, tweetRepository, userRepository);
-        return  tweetMapper.entityToDto(tweetRepository.saveAndFlush(tweet));
+        return tweetMapper.entityToDto(tweetRepository.saveAndFlush(tweet));
     }
 
+
+
     @Override
-    public TweetResponseDto repostTweet(Long id, TweetRequestDto tweetRequestDto) {
-
-
-        Optional<Tweet> tweetToBeReposted = tweetRepository.findByIdAndDeletedFalse(id);
-
-        if (tweetRequestDto == null) {
-
-            throw new BadRequestException("Credentials cannot be null" + tweetRequestDto);
-
-        }
-
-        CredentialsDto credentialsDto = tweetRequestDto.getCredentials();
-
+    public TweetResponseDto repostTweet(Long id, CredentialsDto credentialsDto) {
         if (credentialsDto == null) {
-
             throw new BadRequestException("Bad Credentials DTO");
         }
-
-
         Optional<User> tweetAuthor = userRepository.findByCredentialsUsernameAndDeletedFalse(credentialsDto.getUsername());
-
         if (!credentialsAreCorrect(tweetAuthor, credentialsDto)) {
             throw new BadRequestException("Bad credentials or user is not active");
         }
 
-        if (tweetToBeReposted.isEmpty() || tweetToBeReposted.get().isDeleted()) {
-
-
-            throw new NotFoundException("No tweet found with id: " + id);        // fix error code
-
+        Optional<Tweet> optionalTweet = tweetRepository.findByIdAndDeletedFalse(id);
+        if (optionalTweet.isEmpty()) {
+            throw new NotFoundException("No tweet found");
         }
-
-        Tweet repostTweet = tweetMapper.dtoToEntity(tweetRequestDto);
-
-        repostTweet.setRepostOf(tweetToBeReposted.get());
-
-        return tweetMapper.entityToDto(tweetRepository.saveAndFlush(repostTweet));
-
+        Tweet tweet = new Tweet();
+        tweet.setAuthor(tweetAuthor.get());
+        tweet.setRepostOf(optionalTweet.get());
+        return tweetMapper.entityToDto(tweetRepository.saveAndFlush(tweet));
     }
 
     @Override

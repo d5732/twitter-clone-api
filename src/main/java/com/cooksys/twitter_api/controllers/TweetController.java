@@ -11,40 +11,37 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/tweets")
 public class TweetController {
-	
+
     private final TweetService tweetService;
 
-    
 
     @PostMapping
     public TweetResponseDto createTweet(@RequestBody TweetRequestDto tweetRequestDto) {
         return tweetService.createTweet(tweetRequestDto);
     }
 
-	    @PostMapping("/{id}/reply")
-	    public TweetResponseDto replyToTweet(@PathVariable Long id, @RequestBody TweetRequestDto tweetRequestDto) {
-	    	
-	    	return tweetService.replyToTweet(id, tweetRequestDto);
-	    	
-	    }
-     
+    @PostMapping("/{id}/reply")
+    public TweetResponseDto replyToTweet(@PathVariable Long id, @RequestBody TweetRequestDto tweetRequestDto) {
+        return tweetService.replyToTweet(id, tweetRequestDto);
 
-	    @PostMapping("/{id}/repost")
-	    public TweetResponseDto repostTweet(@PathVariable Long id, @RequestBody TweetRequestDto tweetRequestDto) {
-	    	
-	    	return tweetService.repostTweet(id, tweetRequestDto);
-	    }
+    }
+
+
+    @PostMapping("/{id}/repost")
+    public TweetResponseDto repostTweet(@PathVariable Long id, @RequestBody CredentialsDto credentialsDto) {
+        return tweetService.repostTweet(id, credentialsDto);
+    }
 
 
     @GetMapping("/{id}/tags")
     public void getTags() {
-    
+
     }
 
-	    
+
     @GetMapping("/{id}/reposts")
     public List<TweetResponseDto> getReposts(@PathVariable Long id) {
-        return  tweetService.getReposts(id);
+        return tweetService.getReposts(id);
     }
 
 
@@ -107,5 +104,5 @@ public class TweetController {
         return tweetService.getContext(id);
 
     }
-    
+
 }
