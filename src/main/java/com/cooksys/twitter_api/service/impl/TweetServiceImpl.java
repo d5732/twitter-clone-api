@@ -58,7 +58,7 @@ public class TweetServiceImpl implements TweetService {
      */
     @Override
     public TweetResponseDto createTweet(TweetRequestDto tweetRequestDto) {
-      
+
     	CredentialsDto credentialsDto = tweetRequestDto.getCredentials();
         // 1. If the given credentials do not match an active user in the database, an error should be sent
         // 2. It must have a content property
@@ -81,6 +81,7 @@ public class TweetServiceImpl implements TweetService {
 
         Tweet tweet = tweetMapper.dtoToEntity(tweetRequestDto);
         tweet.setAuthor(optionalAuthor.get());
+        optionalAuthor.get().getTweets().add(tweet);
         tweet.setPosted(new Timestamp(System.currentTimeMillis()));
         Tweet savedTweet = tweetRepository.saveAndFlush(tweet);
         parseAndSaveMentions(savedTweet, tweetRepository, userRepository); // inject dependencies
@@ -230,15 +231,16 @@ public class TweetServiceImpl implements TweetService {
         return tweetMapper.entitiesToDtos(tweetList);
 
     }
-
+    
+    
 
     @Override
-    public TweetResponseDto deleteTweet(Long id, TweetRequestDto tweetRequestDto) {
+    public TweetResponseDto deleteTweet(Long id, CredentialsDto credentialsDto) {
 
         Optional<Tweet> tToDel = tweetRepository.findByIdAndDeletedFalse(id);
 
 
-        if (!tToDel.isPresent() || !tweetRequestDto.getCredentials().equals(tToDel.get().getAuthor())) {
+        if (!tToDel.isPresent() || !credentialsDto.getUsername().equals(tToDel.get().getAuthor().getCredentials().getUsername())) {
 
 
             throw new NotFoundException("No tweet found with id: " + id);

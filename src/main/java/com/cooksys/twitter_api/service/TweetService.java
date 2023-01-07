@@ -37,7 +37,7 @@ public interface TweetService {
 	  
 	  List<TweetResponseDto> getTweets();
 		  
-	  TweetResponseDto deleteTweet(Long id, TweetRequestDto tweetRequestDto);	
+	  TweetResponseDto deleteTweet(Long id, CredentialsDto credentialsDto);	
 
 	  List<UserResponseDto> getLikes(Long id);
 
