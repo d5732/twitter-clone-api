@@ -213,19 +213,12 @@ public class UserServiceImpl implements UserService {
         if (optionalUser.isEmpty()) {
             throw new NotFoundException(String.format("No active user found with username @%s", username));
         }
-        ArrayList<Tweet> deleted = new ArrayList<>();
+        ArrayList<Tweet> result = new ArrayList<>();
         for (Tweet tweet : optionalUser.get().getTweets()) {
-            if (tweet.isDeleted()) {
-                deleted.add(tweet);
-            }
+                result.add(tweet);
         }
-        for (Tweet tweet : deleted) {
-            optionalUser.get().getTweets().remove(tweet);
-        }
-        // TODO: Check sort order
-        optionalUser.get().getMentionsTweetList().sort(new SortByPostedReverse());
-        // TODO: UNIMPORTANT (if this works fine) fix or replace entitiesToDtos with for loop
-        return tweetMapper.entitiesToDtos(optionalUser.get().getTweets());
+        result.sort(new SortByPostedReverse());
+        return tweetMapper.entitiesToDtos(result);
     }
 
 

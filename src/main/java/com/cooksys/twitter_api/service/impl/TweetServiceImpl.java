@@ -58,7 +58,7 @@ public class TweetServiceImpl implements TweetService {
      */
     @Override
     public TweetResponseDto createTweet(TweetRequestDto tweetRequestDto) {
-      
+
     	CredentialsDto credentialsDto = tweetRequestDto.getCredentials();
         // 1. If the given credentials do not match an active user in the database, an error should be sent
         // 2. It must have a content property
@@ -81,6 +81,7 @@ public class TweetServiceImpl implements TweetService {
 
         Tweet tweet = tweetMapper.dtoToEntity(tweetRequestDto);
         tweet.setAuthor(optionalAuthor.get());
+        optionalAuthor.get().getTweets().add(tweet);
         tweet.setPosted(new Timestamp(System.currentTimeMillis()));
         Tweet savedTweet = tweetRepository.saveAndFlush(tweet);
         parseAndSaveMentions(savedTweet, tweetRepository, userRepository); // inject dependencies
@@ -139,6 +140,11 @@ public class TweetServiceImpl implements TweetService {
     	}
 
     	CredentialsDto credentialsDto = tweetRequestDto.getCredentials();
+    	
+    	if(credentialsDto == null) {
+    		
+    		throw new BadRequestException("Bad Credentials DTO");
+    	}
     	
     	
         Optional<User> tweetAuthor = userRepository.findByCredentialsUsernameAndDeletedFalse(credentialsDto.getUsername());
@@ -225,15 +231,16 @@ public class TweetServiceImpl implements TweetService {
         return tweetMapper.entitiesToDtos(tweetList);
 
     }
-
+    
+    
 
     @Override
-    public TweetResponseDto deleteTweet(Long id, TweetRequestDto tweetRequestDto) {
+    public TweetResponseDto deleteTweet(Long id, CredentialsDto credentialsDto) {
 
         Optional<Tweet> tToDel = tweetRepository.findByIdAndDeletedFalse(id);
 
 
-        if (!tToDel.isPresent() || !tweetRequestDto.getCredentials().equals(tToDel.get().getAuthor())) {
+        if (!tToDel.isPresent() || !credentialsDto.getUsername().equals(tToDel.get().getAuthor().getCredentials().getUsername())) {
 
 
             throw new NotFoundException("No tweet found with id: " + id);
@@ -263,15 +270,19 @@ public class TweetServiceImpl implements TweetService {
         }
 
         ArrayList<User> usersToReturn = new ArrayList<>();
-
+        
+        
+       
+        /*
         for (User u : userRepository.findAllByDeletedFalse()) {    // for all active users
 
             if (u.getLikesTweetList().contains(optionalTweet)) {            // u liked OptionalTweet
                 usersToReturn.add(u);
             }
         }
+        */
 
-        return tweetMapper.entitiesToUserDtos(usersToReturn);
+        return tweetMapper.entitiesToUserDtos(optionalTweet.get().getLikesUserList());
 
 
     }
@@ -288,6 +299,8 @@ public class TweetServiceImpl implements TweetService {
             throw new NotFoundException("No tweet found with id: " + id);
 
         }
+        
+        System.out.println("hello- ");
 
         return tweetMapper.entityToDto(optionalTweet.get());
 
@@ -368,7 +381,7 @@ public class TweetServiceImpl implements TweetService {
 
         List<TweetResponseDto> replies = null;
 
-        if (!(targetTweet.getInReplyTo().getContent().isEmpty() && targetTweet.getInReplyTo() == null)) {
+        if ((targetTweet.getInReplyTo() != null && !targetTweet.getInReplyTo().getContent().isEmpty())) {
 
             //TODO: warning about NullPointerException related to this conditional + replies.add(); secquence
 
@@ -384,13 +397,13 @@ public class TweetServiceImpl implements TweetService {
     }
 
     @Override
-    public void likeTweet(Long id, UserRequestDto userRequestDto) {
+    public void likeTweet(Long id, CredentialsDto credentialsDto) {
 
-    	
-    	if (!userRepository.findByCredentialsUsernameAndDeletedFalse(userRequestDto.getCredentials().getUsername()).isPresent()) {
+        Optional<User> liker = userRepository.findByCredentialsUsernameAndDeletedFalse(credentialsDto.getUsername());
 
+        if(liker.isEmpty() || !credentialsAreCorrect(liker, credentialsDto)) {
 
-            throw new NotFoundException("Bad credentials with id: " + userRequestDto.getCredentials().getUsername());
+            throw new BadRequestException("Bad request");
         }
     	
     	
@@ -404,13 +417,25 @@ public class TweetServiceImpl implements TweetService {
         }
         
 
-        Optional<User> toLike = userRepository.findByCredentialsUsernameAndDeletedFalse(userRequestDto.getCredentials().getUsername());
+        if(!toBeLiked.get().getLikesUserList().contains(liker.get())) {
+        	
+            toBeLiked.get().getLikesUserList().add(liker.get());
+            tweetRepository.saveAndFlush(toBeLiked.get());
 
-        List<User> usersLikeTweetList = toBeLiked.get().getLikesUserList();
+        	
+        }
 
-        usersLikeTweetList.add(toLike.get());
+        
+        if(!liker.get().getLikesTweetList().contains(toBeLiked.get())) {
+        	
+            liker.get().getLikesTweetList().add(toBeLiked.get());
+            
+            userRepository.saveAndFlush(liker.get());
 
-        toBeLiked.get().setLikesUserList(usersLikeTweetList);
+
+        }
+
+                
 
 
     }

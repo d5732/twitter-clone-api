@@ -10,15 +10,15 @@ public interface TweetService {
 
     // To do
 	  
-	  ResponseEntity<TweetRequestDto> createTweetReply(@PathVariable TweetRequestDto tweetRequestDto);
+	  ResponseEntity<TweetRequestDto> createTweetReply(TweetRequestDto tweetRequestDto);
 
 	  
 	  ResponseEntity<TweetResponseDto> getTags(Long id);
 	  
-	  ResponseEntity<TweetResponseDto> getReposts(Long id);
+	  List<TweetResponseDto> getReposts(Long id);
 	  
 	  
-	  ResponseEntity<TweetResponseDto> getMentions(Long id);
+	  List<UserResponseDto> getMentions(Long id);
 	  
 
 	  ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -33,11 +33,11 @@ public interface TweetService {
 
 	  TweetResponseDto repostTweet(Long ID, TweetRequestDto tweetRequestDto);
 	  
-	  void likeTweet(Long id, UserRequestDto userRequestDto);
+	  void likeTweet(Long id, CredentialsDto credentialsDto);
 	  
 	  List<TweetResponseDto> getTweets();
 		  
-	  TweetResponseDto deleteTweet(Long id, TweetRequestDto tweetRequestDto);	
+	  TweetResponseDto deleteTweet(Long id, CredentialsDto credentialsDto);	
 
 	  List<UserResponseDto> getLikes(Long id);
 
