@@ -17,6 +17,6 @@ public interface HashtagRepository extends JpaRepository<Hashtag, Long> {
 
 	List<Hashtag> findAllByDeletedFalse();
 	
-//	Boolean hashtagExists(String label);
+	Optional<Hashtag> findByLabel(String label);
 
 }

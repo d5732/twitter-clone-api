@@ -12,8 +12,7 @@ public interface TweetService {
 	  
 	  ResponseEntity<TweetRequestDto> createTweetReply(TweetRequestDto tweetRequestDto);
 
-	  
-	  ResponseEntity<TweetResponseDto> getTags(Long id);
+	  List<TweetResponseDto> getTags(Long id, String Label);
 	  
 	  List<TweetResponseDto> getReposts(Long id);
 	  

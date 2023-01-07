@@ -35,10 +35,20 @@ public class TweetController {
 	    	return tweetService.repostTweet(id, tweetRequestDto);
 	    }
 
-
+/**
+ * 
+ * GET tweets/{id}/tags
+ * 
+ * Retrieves the tags associated with the tweet with the given id. If that tweet is deleted or otherwise doesn't exist, an error should be sent in lieu of a response.
+ * 
+ * IMPORTANT Remember that tags and mentions must be parsed by the server!
+ * 
+ * Response ['Hashtag']
+ * 
+ */
     @GetMapping("/{id}/tags")
-    public void getTags() {
-    
+    public List<TweetResponseDto> getTags(@PathVariable Long id, @RequestBody String label) {
+    	return tweetService.getTags(id, label);
     }
 
 	    
