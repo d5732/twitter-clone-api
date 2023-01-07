@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.sql.Array;
 import java.sql.Timestamp;
 import java.util.*;
 
@@ -375,25 +376,20 @@ public class TweetServiceImpl implements TweetService {
 	*/
 
     @Override
-    public List<TweetResponseDto> getReplies(Long id) {        // entity to dtos
-
-        TweetResponseDto targetTweet = getTweet(id);
-
-        List<TweetResponseDto> replies = null;
-
-        if ((targetTweet.getInReplyTo() != null && !targetTweet.getInReplyTo().getContent().isEmpty())) {
-
-            //TODO: warning about NullPointerException related to this conditional + replies.add(); secquence
-
-            replies.add(targetTweet.getInReplyTo());
-
-        } else {
-
-            throw new BadRequestException("Tweet with id " + id + " doesn't exist or deleted");
+    public List<TweetResponseDto> getReplies(Long id) {
+        Optional<User> optionalUser = userRepository.findByIdAndDeletedFalse(id);
+        List<Tweet> allTweets = tweetRepository.findAllByDeletedFalse();
+        if (optionalUser.isEmpty()) {
+            throw new BadRequestException("bad user id");
         }
 
-
-        return replies;
+        ArrayList<Tweet> result = new ArrayList<>();
+        for (Tweet tweet : allTweets) {
+            if(tweet.getInReplyTo().getAuthor() == optionalUser.get()) {
+                result.add(tweet);
+            }
+        }
+        return tweetMapper.entitiesToDtos(result);
     }
 
     @Override
