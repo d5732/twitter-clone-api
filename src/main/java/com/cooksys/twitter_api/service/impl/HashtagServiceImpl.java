@@ -68,7 +68,6 @@ public class HashtagServiceImpl implements HashtagService {
 	 * 
 	 * Response ['Tweet']
 	 */
-
 	@Override
 	public List<TweetResponseDto> getTweetsWithLabel(String label) {
 		Optional<Hashtag> optionalHashtag = hashtagRepository.findByLabelAndDeletedFalse(label);
