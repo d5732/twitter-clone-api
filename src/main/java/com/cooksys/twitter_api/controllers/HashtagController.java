@@ -3,6 +3,7 @@ package com.cooksys.twitter_api.controllers;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -26,7 +27,7 @@ public class HashtagController {
 	}
 	
 	@GetMapping("/{label}")
-	List<TweetResponseDto> getTweetsWithLabel(Long id, String label){
+	List<TweetResponseDto> getTweetsWithLabel(@PathVariable String label){
 		
 		return hashtagService.getTweetsWithLabel(label);
 	}
