@@ -57,7 +57,6 @@ public class Helpers {
         while (matcher.find()) {
             mentions.add(content.substring(matcher.start()+1, matcher.end()));
         }
-        System.out.println("~~~~~~~~~~~~~~~~~~~~ parseAndSaveMentions created mentions string set: " + mentions);
         if (mentions.size() > 0) {
             HashSet<User> usersToSave = new HashSet<>();
             for (String mention : mentions) {
@@ -78,7 +77,6 @@ public class Helpers {
         while (matcher.find()) {
             labels.add(content.substring(matcher.start()+1, matcher.end()));
         }
-        System.out.println("~~~~~~~~~~~~~~~~~~~~ parseAndSaveHashtags created labels string set: " + labels);
         if (labels.size() > 0) {
             HashSet<Hashtag> hashtagsToSave = new HashSet<>();
             for (String label : labels) {

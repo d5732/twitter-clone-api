@@ -1,5 +1,6 @@
 package com.cooksys.twitter_api.helpers;
 
+import com.cooksys.twitter_api.dtos.TweetResponseDto;
 import com.cooksys.twitter_api.entities.Tweet;
 
 import java.util.Comparator;
@@ -10,3 +11,5 @@ public class SortByPostedReverse implements Comparator<Tweet> {
     }
 
 }
+
+

@@ -176,12 +176,9 @@ public class TweetServiceImpl implements TweetService {
         List<Tweet> allTweets = tweetRepository.findAllByDeletedFalse();
         ArrayList<Tweet> result = new ArrayList<>();
 
-        System.out.println("189 allTweets.size() : " + allTweets.size());
 
         for (Tweet tweet : allTweets) {
-            System.out.println("Hi Denwa");
             if (tweet.getRepostOf() != null && tweet.getRepostOf().equals(optionalTweet.get())) {
-                System.out.println("Hi Allen");
                 result.add(tweet);
             }
         }
@@ -298,47 +295,35 @@ public class TweetServiceImpl implements TweetService {
 
     @Override
     public ContextDto getContext(Long id) {
-
-//
-//        private TweetResponseDto target;
-//
-//        private List<TweetResponseDto> after;
-//
-//        private List<TweetResponseDto> before;
-
-        // {aft: [], bef: [], target: tweet}
-
-        //  tweet.inReplyTo() ->  parent tweet
-
         Optional<Tweet> optionalTweet = tweetRepository.findByIdAndDeletedFalse(id);
-
         if (optionalTweet.isEmpty()) {
             throw new NotFoundException("tweet not found");
         }
         ContextDto result = new ContextDto();
         result.setTarget(tweetMapper.entityToDto(optionalTweet.get()));
-
         List<Tweet> allTweets = tweetRepository.findAll();
         ArrayList<ArrayList<Tweet>> unsortedContexts = new ArrayList<>();
-
-//        IMPORTANT: While deleted tweets should not be included in the before and after properties of the result,
-//        transitive replies should. What that means is that if a reply to the target of the context is deleted, but
-//        there's another reply to the deleted reply, the deleted reply should be excluded but the other reply should remain.
-
-
+        System.out.println("all tweets size: " + allTweets.size());
         for (Tweet _tweet : allTweets) {
             ArrayList<Tweet> uC = new ArrayList<>();
-            while (_tweet != null && _tweet.getRepostOf() != null) {
+            while (_tweet != null) {
+                System.out.println("while");
                 if (!_tweet.equals(optionalTweet.get())) {
-                    uC.add(_tweet.getRepostOf());
+                    uC.add(_tweet);
                 }
-                _tweet = _tweet.getRepostOf();
+                _tweet = _tweet.getInReplyTo();
             }
             unsortedContexts.add(uC);
         }
         unsortedContexts.sort(new SortBySizeReverse());
+        for (ArrayList<Tweet> l : unsortedContexts) {
+            for (Tweet t : l) {
+                System.out.println(l.size() + " " + t.getId());
+            }
+        }
 
         for (ArrayList<Tweet> l : unsortedContexts) {
+
             if (l.contains(optionalTweet.get())) {
                 // found correct context!
                 // bucket sort
@@ -346,6 +331,7 @@ public class TweetServiceImpl implements TweetService {
                 ArrayList<Tweet> before = new ArrayList<>();
                 for (Tweet _tweet : l) {
                     if (!_tweet.isDeleted()) {
+                        System.out.println(_tweet.getId() + " " + _tweet.getPosted().getTime());
                         if (_tweet.getPosted().getTime() > optionalTweet.get().getPosted().getTime()) {
                             after.add(_tweet);
                         } else {
@@ -360,6 +346,8 @@ public class TweetServiceImpl implements TweetService {
                 return result;
             }
         }
+        result.setAfter(new ArrayList<>());
+        result.setBefore(new ArrayList<>());
         return result;
     }
 
