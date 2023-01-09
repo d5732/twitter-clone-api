@@ -8,10 +8,6 @@ import java.util.List;
 
 public interface TweetService {
 
-    // To do
-	  
-	  ResponseEntity<TweetRequestDto> createTweetReply(TweetRequestDto tweetRequestDto);
-
 	  List<TweetResponseDto> getTags(Long id, String Label);
 	  
 	  List<TweetResponseDto> getReposts(Long id);
@@ -20,11 +16,6 @@ public interface TweetService {
 	  List<UserResponseDto> getMentions(Long id);
 	  
 
-	  ////////////////////////////////////////////////////////////////////////////////////////////////
-	  
-	  
-	  // Active
-		   
 	  TweetResponseDto replyToTweet(Long id, TweetRequestDto tweetRequestDto);
 
 

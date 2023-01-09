@@ -114,31 +114,9 @@ public class TweetServiceImpl implements TweetService {
         return tweetMapper.entityToDto(savedTweet);
     }
 
-    @Override
-    public ResponseEntity<TweetRequestDto> createTweetReply(TweetRequestDto tweetRequestDto) {
-        // TODO Auto-generated method stub
-        return null;
-    }
 
-
-    /*
-     *
-     *
-     * Creates a reply tweet to the tweet with the given id.
-     * The author of the newly-created tweet should match the credentials provided by the request body.
-     * If the given tweet is deleted or otherwise doesn't exist, or if the given credentials do not match an active user
-     * in the database, an error should be sent in lieu of a response.
-     * Because this creates a reply tweet, content is not optional. Additionally, notice
-     * that the inReplyTo property is not provided by the request. The server must create that relationship.
-     * The response should contain the newly-created tweet.
-     *
-     * IMPORTANT: when a tweet with content is created, the server must process the tweet's
-     * content for @{username} mentions and #{hashtag} tags. There is no way to create hashtags or
-     * create mentions from the API, so this must be handled automatically!
-     */
     @Override
     public TweetResponseDto replyToTweet(Long id, TweetRequestDto tweetRequestDto) {
-
         // step 1 - get tweetToBeRepliedTo by id
 
         Optional<Tweet> tweetToBeRepliedTo = tweetRepository.findByIdAndDeletedFalse(id);
@@ -155,10 +133,9 @@ public class TweetServiceImpl implements TweetService {
             throw new BadRequestException("Bad request");
         }
 
-        Optional<User> optionalUser = userRepository.findByCredentialsUsernameAndDeletedFalse("");
+        Optional<User> optionalUser = userRepository.findByCredentialsUsernameAndDeletedFalse(tweetRequestDto.getCredentials().getUsername());
 
         // step 4 - check if the given credentials match the credentials
-
         if (!credentialsAreCorrect(optionalUser, tweetRequestDto.getCredentials())) {
             throw new BadRequestException("BAD");
         }
@@ -232,8 +209,6 @@ public class TweetServiceImpl implements TweetService {
 
     @Override
     public List<TweetResponseDto> getReposts(Long id) {
-
-        //todo: untested method, waiting for post retweet
         Optional<Tweet> optionalTweet = tweetRepository.findByIdAndDeletedFalse(id);
         if (optionalTweet.isEmpty()) {
             throw new NotFoundException("Tweet not found with id: " + id);
@@ -353,7 +328,6 @@ public class TweetServiceImpl implements TweetService {
 
         }
 
-        System.out.println("hello- ");
 
         return tweetMapper.entityToDto(optionalTweet.get());
 
