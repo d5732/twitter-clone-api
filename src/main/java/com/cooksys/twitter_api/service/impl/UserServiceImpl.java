@@ -215,7 +215,9 @@ public class UserServiceImpl implements UserService {
         }
         ArrayList<Tweet> result = new ArrayList<>();
         for (Tweet tweet : optionalUser.get().getTweets()) {
-                result.add(tweet);
+                if(!tweet.isDeleted()) {
+                    result.add(tweet);
+                }
         }
         result.sort(new SortByPostedReverse());
         return tweetMapper.entitiesToDtos(result);
@@ -237,18 +239,15 @@ public class UserServiceImpl implements UserService {
         if (optionalUser.isEmpty()) {
             throw new NotFoundException(String.format("User not found with username @%s", username));
         }
-        ArrayList<Tweet> deleted = new ArrayList<>();
+        ArrayList<Tweet> res = new ArrayList<>();
         for (Tweet tweet : optionalUser.get().getMentionsTweetList()) {
             if (!tweet.isDeleted()) {
-                deleted.add(tweet);
+                res.add(tweet);
             }
         }
-        for (Tweet tweet : deleted) {
-            optionalUser.get().getMentionsTweetList().remove(tweet);
-        }
         //TODO: Check sort order
-        optionalUser.get().getMentionsTweetList().sort(new SortByPostedReverse());
-        return tweetMapper.entitiesToDtos(optionalUser.get().getMentionsTweetList());
+        res.sort(new SortByPostedReverse());
+        return tweetMapper.entitiesToDtos(res);
     }
 
 
