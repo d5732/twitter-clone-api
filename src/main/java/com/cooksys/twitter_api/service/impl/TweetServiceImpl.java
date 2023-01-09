@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.cooksys.twitter_api.dtos.ContextDto;
@@ -19,7 +18,6 @@ import com.cooksys.twitter_api.dtos.HashtagDto;
 import com.cooksys.twitter_api.dtos.TweetRequestDto;
 import com.cooksys.twitter_api.dtos.TweetResponseDto;
 import com.cooksys.twitter_api.dtos.UserResponseDto;
-import com.cooksys.twitter_api.entities.Hashtag;
 import com.cooksys.twitter_api.entities.Tweet;
 import com.cooksys.twitter_api.entities.User;
 import com.cooksys.twitter_api.exceptions.BadRequestException;
@@ -34,16 +32,6 @@ import com.cooksys.twitter_api.repositories.HashtagRepository;
 import com.cooksys.twitter_api.repositories.TweetRepository;
 import com.cooksys.twitter_api.repositories.UserRepository;
 import com.cooksys.twitter_api.service.TweetService;
-
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
-
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
 
 import lombok.RequiredArgsConstructor;
 
@@ -183,27 +171,16 @@ public class TweetServiceImpl implements TweetService {
      * 
      */
     @Override
-    public List<TweetResponseDto> getTags(Long id, String label) {
+    public List<HashtagDto> getTags(Long id) {
+        Optional<Tweet> oT = tweetRepository.findByIdAndDeletedFalse(id);
 
-//    	Optional<Hashtag> optionalHashtag = hashtagRepository.findByLabelAndDeletedFalse(label);
-//        Optional<Tweet> optionalTweet = tweetRepository.findByIdAndDeletedFalse(id);
-//        
-//        if (optionalTweet.isEmpty()) {
-//            throw new NotFoundException("Tweet not found with id: " + id);
-//        }
-//    	
-//        List<Tweet> tweetsWithTags = tweetRepository.findAllByDeletedFalse();
-//
-//        ArrayList<Hashtag> hashtags = new ArrayList<>();
-//        for (Hashtag hashtag : tweetsWithTags) {
-//            if (hashtag.getLabel().equals(optionalTweet.get())) {
-//                hashtags.add(hashtag);
-//            }
-//        }
-//
-//        return hashtagMapper.entitiesToDtos(hashtags);
+        if (oT.isEmpty()) {
+            throw new BadRequestException("no tweet @ id");
+        }
+
+        return hashtagMapper.entitiesToDtos(oT.get().getHashtagList());
+
         
-        return null;
     }
 
 
