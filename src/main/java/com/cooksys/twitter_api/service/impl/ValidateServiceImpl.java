@@ -16,8 +16,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ValidateServiceImpl implements ValidateService {
 	
-	private HashtagRepository hashtagRepository;
-	private UserRepository userRepository;
+	private final HashtagRepository hashtagRepository;
+	private final UserRepository userRepository;
 
 		
 	/**
@@ -31,8 +31,9 @@ public class ValidateServiceImpl implements ValidateService {
 	public boolean usernameAvailable(String username) {
 		
 		Optional<User> user = userRepository.findByCredentialsUsername(username);
-        
+
 		if (user.isEmpty()) {
+			System.out.println("HELLO");
             return true;
         }
 		
@@ -73,7 +74,7 @@ public class ValidateServiceImpl implements ValidateService {
 
         Optional<Hashtag> hashtag = hashtagRepository.findByLabel(label);
 
-        if (hashtag == null) {
+        if (hashtag.isEmpty()) {
             return false;
         }
 
