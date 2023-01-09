@@ -10,6 +10,3 @@ public class SortByPostedReverse implements Comparator<Tweet> {
     }
 
 }
-
-
-

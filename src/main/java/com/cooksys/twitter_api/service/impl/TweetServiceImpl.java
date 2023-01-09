@@ -6,6 +6,7 @@ import com.cooksys.twitter_api.entities.User;
 import com.cooksys.twitter_api.exceptions.BadRequestException;
 import com.cooksys.twitter_api.exceptions.NotFoundException;
 import com.cooksys.twitter_api.helpers.SortByPostedReverse;
+import com.cooksys.twitter_api.helpers.SortBySizeReverse;
 import com.cooksys.twitter_api.mappers.HashtagMapper;
 import com.cooksys.twitter_api.mappers.TweetMapper;
 import com.cooksys.twitter_api.mappers.UserMapper;
@@ -16,6 +17,7 @@ import com.cooksys.twitter_api.service.TweetService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.naming.Context;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -297,69 +299,70 @@ public class TweetServiceImpl implements TweetService {
     @Override
     public ContextDto getContext(Long id) {
 
+//
+//        private TweetResponseDto target;
+//
+//        private List<TweetResponseDto> after;
+//
+//        private List<TweetResponseDto> before;
 
-        TweetResponseDto fetchTweet = getTweet(id);
+        // {aft: [], bef: [], target: tweet}
 
-        if (fetchTweet == null) {
+        //  tweet.inReplyTo() ->  parent tweet
 
-            throw new NotFoundException("No tweet found with : " + id);
+        Optional<Tweet> optionalTweet = tweetRepository.findByIdAndDeletedFalse(id);
 
+        if (optionalTweet.isEmpty()) {
+            throw new NotFoundException("tweet not found");
         }
+        ContextDto result = new ContextDto();
+        result.setTarget(tweetMapper.entityToDto(optionalTweet.get()));
 
-        // 1 - get replies to tweet with id
+        List<Tweet> allTweets = tweetRepository.findAll();
+        ArrayList<ArrayList<Tweet>> unsortedContexts = new ArrayList<>();
 
-        // dennis ideas - get all tweets
-
-        // find all tweets that point to null (where inReplyTo = null)
-
-        // know about all deleted tweets
-        // when u find the head whihc is has fetchTweet in its list as a reply, it is the head
-        // H.getReplies() - will have all the tweets
-        // sort H.getReplies ()
-        // Bucket sort - before and after
+//        IMPORTANT: While deleted tweets should not be included in the before and after properties of the result,
+//        transitive replies should. What that means is that if a reply to the target of the context is deleted, but
+//        there's another reply to the deleted reply, the deleted reply should be excluded but the other reply should remain.
 
 
-        List<TweetResponseDto> fetchTweetReplies = getReplies(id);    // gets replies that are not deleted
-
-        List<TweetResponseDto> before = null, after = null;
-
-        for (TweetResponseDto t : fetchTweetReplies) {
-
-            if (t.getInReplyTo() != null) {
-
-
-                after.add(t.getInReplyTo());    // prepare after
-
-                //TODO: warning about NullPointerException related to this conditional + replies.add(); secquence
-
-
-            } else {
-
-                before.add(t);                // prepare before
-
+        for (Tweet _tweet : allTweets) {
+            ArrayList<Tweet> uC = new ArrayList<>();
+            while (_tweet != null && _tweet.getRepostOf() != null) {
+                if (!_tweet.equals(optionalTweet.get())) {
+                    uC.add(_tweet.getRepostOf());
+                }
+                _tweet = _tweet.getRepostOf();
             }
-
+            unsortedContexts.add(uC);
         }
+        unsortedContexts.sort(new SortBySizeReverse());
 
-        // A - C
-        //	While deleted tweets should not be included in the before and after properties of the result,
-        //	transitive replies should. What that means is that if a reply to the target of the context is deleted,
-        //	but there's another reply to the deleted reply, the deleted reply should be excluded but the other reply should remain.
-
-        //	return tweetMapper.entitiesToContextDto();	// doubt here - how to return before, after and target in context
-
-        return null;
+        for (ArrayList<Tweet> l : unsortedContexts) {
+            if (l.contains(optionalTweet.get())) {
+                // found correct context!
+                // bucket sort
+                ArrayList<Tweet> after = new ArrayList<>();
+                ArrayList<Tweet> before = new ArrayList<>();
+                for (Tweet _tweet : l) {
+                    if (!_tweet.isDeleted()) {
+                        if (_tweet.getPosted().getTime() > optionalTweet.get().getPosted().getTime()) {
+                            after.add(_tweet);
+                        } else {
+                            before.add(_tweet);
+                        }
+                    }
+                }
+                after.sort(new SortByPostedReverse());
+                before.sort(new SortByPostedReverse());
+                result.setAfter(tweetMapper.entitiesToDtos(after));
+                result.setBefore(tweetMapper.entitiesToDtos(before));
+                return result;
+            }
+        }
+        return result;
     }
 
-	/*
-	public Tweet getParentTweet(Tweet t) {		// helper method
-		Long id = t.getId();
-		if(!t.isDeleted() && !t.getInReplyTo().) {		// doubt here
-			return t;
-		}
-		return null;
-	}
-	*/
 
     @Override
     public List<TweetResponseDto> getReplies(Long id) {
