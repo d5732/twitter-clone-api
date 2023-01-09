@@ -17,7 +17,6 @@ import com.cooksys.twitter_api.service.TweetService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import javax.naming.Context;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -107,7 +106,7 @@ public class TweetServiceImpl implements TweetService {
 
         // step 3 - check if tweetToBeRepliedTo is deleted or doesn't exist and throw an error
 
-        if (tweetToBeRepliedTo.isEmpty() || tweetRequestDto == null) {
+        if (tweetToBeRepliedTo.isEmpty()) {
             throw new BadRequestException("Bad request");
         }
 
@@ -227,7 +226,7 @@ public class TweetServiceImpl implements TweetService {
         Optional<Tweet> tToDel = tweetRepository.findByIdAndDeletedFalse(id);
 
 
-        if (!tToDel.isPresent() || !credentialsDto.getUsername().equals(tToDel.get().getAuthor().getCredentials().getUsername())) {
+        if (tToDel.isEmpty() || !credentialsDto.getUsername().equals(tToDel.get().getAuthor().getCredentials().getUsername())) {
 
 
             throw new NotFoundException("No tweet found with id: " + id);
@@ -249,25 +248,13 @@ public class TweetServiceImpl implements TweetService {
 
         Optional<Tweet> optionalTweet = tweetRepository.findByIdAndDeletedFalse(id);
 
-        if (!optionalTweet.isPresent()) {
+        if (optionalTweet.isEmpty()) {
 
 
             throw new NotFoundException("No tweet found with id: " + id);
 
         }
 
-        ArrayList<User> usersToReturn = new ArrayList<>();
-        
-        
-       
-        /*
-        for (User u : userRepository.findAllByDeletedFalse()) {    // for all active users
-
-            if (u.getLikesTweetList().contains(optionalTweet)) {            // u liked OptionalTweet
-                usersToReturn.add(u);
-            }
-        }
-        */
 
         return tweetMapper.entitiesToUserDtos(optionalTweet.get().getLikesUserList());
 
@@ -280,7 +267,7 @@ public class TweetServiceImpl implements TweetService {
 
         Optional<Tweet> optionalTweet = tweetRepository.findByIdAndDeletedFalse(id);
 
-        if (!optionalTweet.isPresent()) {
+        if (optionalTweet.isEmpty()) {
 
 
             throw new NotFoundException("No tweet found with id: " + id);
@@ -303,35 +290,24 @@ public class TweetServiceImpl implements TweetService {
         result.setTarget(tweetMapper.entityToDto(optionalTweet.get()));
         List<Tweet> allTweets = tweetRepository.findAll();
         ArrayList<ArrayList<Tweet>> unsortedContexts = new ArrayList<>();
-        System.out.println("all tweets size: " + allTweets.size());
         for (Tweet _tweet : allTweets) {
             ArrayList<Tweet> uC = new ArrayList<>();
             while (_tweet != null) {
-                System.out.println("while");
-                if (!_tweet.equals(optionalTweet.get())) {
-                    uC.add(_tweet);
-                }
+                uC.add(_tweet);
                 _tweet = _tweet.getInReplyTo();
             }
             unsortedContexts.add(uC);
         }
         unsortedContexts.sort(new SortBySizeReverse());
         for (ArrayList<Tweet> l : unsortedContexts) {
-            for (Tweet t : l) {
-                System.out.println(l.size() + " " + t.getId());
-            }
-        }
-
-        for (ArrayList<Tweet> l : unsortedContexts) {
-
             if (l.contains(optionalTweet.get())) {
-                // found correct context!
+                // found correct context
                 // bucket sort
                 ArrayList<Tweet> after = new ArrayList<>();
                 ArrayList<Tweet> before = new ArrayList<>();
                 for (Tweet _tweet : l) {
-                    if (!_tweet.isDeleted()) {
-                        System.out.println(_tweet.getId() + " " + _tweet.getPosted().getTime());
+                    // guard deleted and target tweet
+                    if (!_tweet.isDeleted() && !_tweet.equals(optionalTweet.get())) {
                         if (_tweet.getPosted().getTime() > optionalTweet.get().getPosted().getTime()) {
                             after.add(_tweet);
                         } else {
@@ -339,8 +315,8 @@ public class TweetServiceImpl implements TweetService {
                         }
                     }
                 }
-                after.sort(new SortByPostedReverse());
-                before.sort(new SortByPostedReverse());
+                after.sort(new SortByPostedReverse()); // todo: verify this is not needed
+                before.sort(new SortByPostedReverse()); // todo: verify this is not needed, context should be in posted date descending order already
                 result.setAfter(tweetMapper.entitiesToDtos(after));
                 result.setBefore(tweetMapper.entitiesToDtos(before));
                 return result;
@@ -382,7 +358,7 @@ public class TweetServiceImpl implements TweetService {
 
         Optional<Tweet> toBeLiked = tweetRepository.findByIdAndDeletedFalse(id);
 
-        if (!toBeLiked.isPresent() || toBeLiked.get().isDeleted()) {
+        if (toBeLiked.isEmpty() || toBeLiked.get().isDeleted()) {
 
 
             throw new NotFoundException("No tweet found with id: " + id);
