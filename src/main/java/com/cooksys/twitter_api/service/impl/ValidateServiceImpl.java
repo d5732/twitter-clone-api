@@ -15,70 +15,53 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class ValidateServiceImpl implements ValidateService {
-	
-	private final HashtagRepository hashtagRepository;
-	private final UserRepository userRepository;
 
-		
-	/**
-	 * 
-	 * GET validate/username/available/@{username} #45
-	 * 
-	 * Checks whether or not a given username is available
-	 * 
-	 */
-	@Override
-	public boolean usernameAvailable(String username) {
-		
-		Optional<User> user = userRepository.findByCredentialsUsername(username);
+    private final HashtagRepository hashtagRepository;
+    private final UserRepository userRepository;
 
-		if (user.isEmpty()) {
-			System.out.println("HELLO");
-            return true;
-        }
-		
-        return false;
-	}
 
-	/**
-	 * 
-	 * GET validate/username/exist/@(username)
-	 * 
-	 * Checks whether or not a given username exists.
-	 * 
-	 * Response 'boolean'
-	 */
-	@Override
-	public boolean usernameExists(String username) {
-        
-		Optional<User> user = userRepository.findByCredentialsUsernameAndDeletedFalse(username);
+    /**
+     * GET validate/username/available/@{username} #45
+     * <p>
+     * Checks whether or not a given username is available
+     */
+    @Override
+    public boolean usernameAvailable(String username) {
 
-        if (user.isEmpty()) {
-            return false;
-        }
+        Optional<User> user = userRepository.findByCredentialsUsername(username);
 
-        return true;
-	}
-	
+        return user.isEmpty();
+    }
 
-	/**
-	 * 
-	 * GET validate/tag/exists/{label} endpoint
-	 * 
-	 * Checks whether or not a given hashtag exists.
-	 * 
-	 * Response 'boolean'
-	 */
-	@Override
-	public boolean hashtagExists(String label) {
+    /**
+     * GET validate/username/exist/@(username)
+     * <p>
+     * Checks whether or not a given username exists.
+     * <p>
+     * Response 'boolean'
+     */
+    @Override
+    public boolean usernameExists(String username) {
+
+        Optional<User> user = userRepository.findByCredentialsUsernameAndDeletedFalse(username);
+
+        return user.isPresent();
+    }
+
+
+    /**
+     * GET validate/tag/exists/{label} endpoint
+     * <p>
+     * Checks whether or not a given hashtag exists.
+     * <p>
+     * Response 'boolean'
+     */
+    @Override
+    public boolean hashtagExists(String label) {
 
         Optional<Hashtag> hashtag = hashtagRepository.findByLabel(label);
 
-        if (hashtag.isEmpty()) {
-            return false;
-        }
-
-        return true;
-	}
+        return hashtag.isPresent();
+    }
 
 }
