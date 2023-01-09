@@ -1,39 +1,27 @@
 package com.cooksys.twitter_api.service.impl;
 
-import static com.cooksys.twitter_api.helpers.Helpers.credentialsAreCorrect;
-import static com.cooksys.twitter_api.helpers.Helpers.isValidTweetRequestDto;
-import static com.cooksys.twitter_api.helpers.Helpers.parseAndSaveHashtags;
-import static com.cooksys.twitter_api.helpers.Helpers.parseAndSaveMentions;
-
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.stereotype.Service;
-
-import com.cooksys.twitter_api.dtos.ContextDto;
-import com.cooksys.twitter_api.dtos.CredentialsDto;
-import com.cooksys.twitter_api.dtos.HashtagDto;
-import com.cooksys.twitter_api.dtos.TweetRequestDto;
-import com.cooksys.twitter_api.dtos.TweetResponseDto;
-import com.cooksys.twitter_api.dtos.UserResponseDto;
+import com.cooksys.twitter_api.dtos.*;
 import com.cooksys.twitter_api.entities.Tweet;
 import com.cooksys.twitter_api.entities.User;
 import com.cooksys.twitter_api.exceptions.BadRequestException;
 import com.cooksys.twitter_api.exceptions.NotFoundException;
 import com.cooksys.twitter_api.helpers.SortByPostedReverse;
-
 import com.cooksys.twitter_api.mappers.HashtagMapper;
-
 import com.cooksys.twitter_api.mappers.TweetMapper;
 import com.cooksys.twitter_api.mappers.UserMapper;
 import com.cooksys.twitter_api.repositories.HashtagRepository;
 import com.cooksys.twitter_api.repositories.TweetRepository;
 import com.cooksys.twitter_api.repositories.UserRepository;
 import com.cooksys.twitter_api.service.TweetService;
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import static com.cooksys.twitter_api.helpers.Helpers.*;
 
 
 @Service
@@ -138,7 +126,6 @@ public class TweetServiceImpl implements TweetService {
     }
 
 
-
     @Override
     public TweetResponseDto repostTweet(Long id, CredentialsDto credentialsDto) {
         if (credentialsDto == null) {
@@ -158,29 +145,23 @@ public class TweetServiceImpl implements TweetService {
         tweet.setRepostOf(optionalTweet.get());
         return tweetMapper.entityToDto(tweetRepository.saveAndFlush(tweet));
     }
-    
+
     /**
-     * 
      * GET tweets/{id}/tags
-     * 
+     * <p>
      * Retrieves the tags associated with the tweet with the given id. If that tweet is deleted or otherwise doesn't exist, an error should be sent in lieu of a response.
-     * 
+     * <p>
      * IMPORTANT Remember that tags and mentions must be parsed by the server!
-     * 
+     * <p>
      * Response ['Hashtag']
-     * 
      */
     @Override
     public List<HashtagDto> getTags(Long id) {
         Optional<Tweet> oT = tweetRepository.findByIdAndDeletedFalse(id);
-
         if (oT.isEmpty()) {
             throw new BadRequestException("no tweet @ id");
         }
-
         return hashtagMapper.entitiesToDtos(oT.get().getHashtagList());
-
-        
     }
 
 
@@ -191,16 +172,18 @@ public class TweetServiceImpl implements TweetService {
             throw new NotFoundException("Tweet not found with id: " + id);
         }
         List<Tweet> allTweets = tweetRepository.findAllByDeletedFalse();
+        ArrayList<Tweet> result = new ArrayList<>();
 
+        System.out.println("189 allTweets.size() : " + allTweets.size());
 
-        ArrayList<Tweet> reposts = new ArrayList<>();
         for (Tweet tweet : allTweets) {
-            if (tweet.getRepostOf().equals(optionalTweet.get())) {
-                reposts.add(tweet);
+            System.out.println("Hi Denwa");
+            if (tweet.getRepostOf() != null && tweet.getRepostOf().equals(optionalTweet.get())) {
+                System.out.println("Hi Allen");
+                result.add(tweet);
             }
         }
-        reposts.sort(new SortByPostedReverse());
-        return tweetMapper.entitiesToDtos(reposts);
+        return tweetMapper.entitiesToDtos(result);
     }
 
     @Override
